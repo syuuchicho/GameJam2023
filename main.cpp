@@ -45,7 +45,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
-	//インスタンス
+	//テスト用エネミー変数
+	int enemyX = 600;
+	int enemyY = 400;
+	int enemyR = 100;
+
+	//----------------------------インスタンス-----------------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
@@ -76,7 +81,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//---------  ここからプログラムを記述  ----------//
 
 		// 更新処理
-		//デスフラグのたった兵を削除
+#pragma region 兵士
+		//死んだ兵士を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 			return solider->IsDead();
 			});
@@ -96,16 +102,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//カウントダウンリセット
 			solBorn = solBornTime;
 		}
-
-
-		//更新
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
-			solider->Update();
+			solider->Update(enemyX,enemyY);
 		}
+#pragma endregion
 
 		// 描画処理
-		//----マウス----------//
+		//マウス
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
@@ -119,6 +123,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			solider->Draw();
 		}
+		//敵
+		DrawCircle(enemyX, enemyY,enemyR,GetColor(255, 0, 0), true);
 
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
