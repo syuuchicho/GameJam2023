@@ -49,8 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int enemyX = 600;
 	int enemyY = 400;
 	int enemyR = 10;
-
-	//----------------------------インスタンス-----------------------------//
+	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
@@ -80,9 +79,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//マウス入力
 		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
-
-		// 更新処理
-#pragma region 兵士
+#pragma region 更新処理
+		//-------------------------兵士---------------------//
 		//死んだ兵士を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 			return solider->IsDead();
@@ -103,7 +101,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//カウントダウンリセット
 			solBorn = solBornTime;
 		}
-		
+		//兵士毎フレーム処理
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Update(enemyX, enemyY, enemyR);
@@ -114,31 +112,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 		}
 #pragma endregion
-
-		// 描画処理
-		//マウス
+		
+#pragma region 描画処理
+		//----------------------マウス----------------//
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);//赤
 		}
 		else if (MouseInput & MOUSE_INPUT_RIGHT)
 		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);//青
 		}
 		else
 		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);//白
 		}
-		//兵士
+		//----------------------兵士--------------------//
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Draw();
 		}
-		//敵
+		//----------------------敵-------------------------//
 		DrawCircle(enemyX, enemyY, enemyR, GetColor(255, 0, 0), true);
 
 		DrawFormatString(20, 20, GetColor(255, 255, 255), "solNo:%d", solNo);
-
+#pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
 		ScreenFlip();

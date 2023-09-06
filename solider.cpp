@@ -1,9 +1,9 @@
 #include "solider.h"
 #include "DxLib.h"
-void Solider::initialize(int& posX, int& posY)
+void Solider::initialize(int& MousePosX, int& MousePosY)
 {
-	pos.x = posX;
-	pos.y = posY;
+	pos.x = MousePosX;
+	pos.y = MousePosY;
 }
 
 void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)

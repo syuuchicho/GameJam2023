@@ -5,7 +5,7 @@
 class Solider
 {
 public:
-	void initialize(int& posX, int& posY);
+	void initialize(int& MousePosX, int& MousePosY);
 	void Update(int&enemyX,int&enemyY,int&enemyRadius);
 	void Eraser(int& MousePosX, int& MousePosY,int&MouseRadius,int&solNo );
 	void Draw();
@@ -21,6 +21,5 @@ private:
 	int atkRadius = 32;
 	int speed = 4;
 	bool isDead_ = false;
-
 };
 
