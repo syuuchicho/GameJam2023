@@ -4,10 +4,10 @@
 const char TITLE[] = "xx2x_xx_ナマエ: タイトル";
 
 // ウィンドウ横幅
-const int WIN_WIDTH = 600;
+const int WIN_WIDTH = 800;
 
 // ウィンドウ縦幅
-const int WIN_HEIGHT = 400;
+const int WIN_HEIGHT = 800;
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine,
                    _In_ int nCmdShow) {
@@ -40,7 +40,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	// ゲームループで使う変数の宣言
-
+	
+	//--------マウス用変数---------//
+	int MouseX = 0;
+	int MouseY = 0;
+	int MouseR = 16;
+	int MouseInput = 0;
 
 	// 最新のキーボード情報用
 	char keys[256] = {0};
@@ -60,12 +65,26 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		// 画面クリア
 		ClearDrawScreen();
+		//マウス座標
+		GetMousePoint(&MouseX, &MouseY);
+		//マウス入力
+		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
 
 		// 更新処理
 
 
 		// 描画処理
+		
+		//----マウス----------//
+		if (MouseInput & MOUSE_INPUT_LEFT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
+		}
+		else
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
+		}
 
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
