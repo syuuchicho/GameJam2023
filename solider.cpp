@@ -16,20 +16,31 @@ void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
 	velocity = len;
 	//UŒ‚”ÍˆÍ‚É“G‚ª‚¢‚È‚¯‚ê‚Î’ÇÕ
 	//‰~‚Ì“–‚½‚è”»’è
-	if (( atkRadius+enemyRadius ) * ( atkRadius+enemyRadius) < 
-		(enemyX - pos.x) * (enemyX - pos.x) + (enemyY - pos.y) * (enemyY- pos.y))
+	if (( atkRadius+enemyRadius ) * ( atkRadius+enemyRadius) 
+		< (enemyX - pos.x) * (enemyX - pos.x) + (enemyY - pos.y) * (enemyY- pos.y))
 	{
 		pos += len;
 	}
 }
 
+void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo)
+{
+	//ƒ}ƒEƒX‚Æ‚Ì‰~‚Ì“–‚½‚è”»’è
+	if ((radius + MouseRadius) * (radius + MouseRadius)
+		>= (MousePosX - pos.x) * (MousePosX - pos.x) + (MousePosY - pos.y) * (MousePosY - pos.y))
+	{
+		isDead_ = true;
+		solNo++;
+	}
+}
+
 void Solider::Draw()
 {
-	int posX2 = pos.x + radius / 2;
-	int posY2 = pos.y + radius / 2;
+	int posX2 = pos.x + radius ;
+	int posY2 = pos.y + radius ;
 
-
-	DrawBox(pos.x - radius / 2, pos.y - radius / 2, posX2, posY2, GetColor(255, 255, 255), true);
+	DrawBox(pos.x - radius , pos.y - radius , posX2, posY2, GetColor(255, 255, 255), true);
+	
 	//UŒ‚”ÍˆÍ
 	DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
 }

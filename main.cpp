@@ -55,6 +55,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
+	int solNo = 5;
 
 	// 最新のキーボード情報用
 	char keys[256] = { 0 };
@@ -86,25 +87,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 			return solider->IsDead();
 			});
-		//兵が生まれるカウントダウン
+		//左クリックで兵士が生まれる
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
 			solBorn--;
 		}
-		//生まれる
-		if (solBorn<=0)
+		if (solBorn <= 0&&solNo>0)
 		{
 			//兵を初期化,登録する
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 			newSolider->initialize(MouseX, MouseY);
 
 			soliders.push_back(std::move(newSolider));
+			solNo--;
 			//カウントダウンリセット
 			solBorn = solBornTime;
 		}
+		
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
-			solider->Update(enemyX,enemyY,enemyR);
+			solider->Update(enemyX, enemyY, enemyR);
+			//右クリックで兵士を消す・solNo+1
+			if (MouseInput & MOUSE_INPUT_RIGHT)
+			{
+				solider->Eraser(MouseX, MouseY, MouseR,solNo);
+			}
 		}
 #pragma endregion
 
@@ -113,6 +120,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
+		}
+		else if (MouseInput & MOUSE_INPUT_RIGHT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
 		}
 		else
 		{
@@ -124,7 +135,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			solider->Draw();
 		}
 		//敵
-		DrawCircle(enemyX, enemyY,enemyR,GetColor(255, 0, 0), true);
+		DrawCircle(enemyX, enemyY, enemyR, GetColor(255, 0, 0), true);
+
+		DrawFormatString(20, 20, GetColor(255, 255, 255), "solNo:%d", solNo);
 
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
