@@ -1,13 +1,15 @@
 #include "DxLib.h"
+#include "solider.h"
+#include "Boss.h"
 
 // ウィンドウのタイトルに表示する文字列
-const char TITLE[] = "xx2x_xx_ナマエ: タイトル";
+const char TITLE[] = "LE3D_09_サクライヒロト: タイトル";
 
 // ウィンドウ横幅
-const int WIN_WIDTH = 600;
+const int WIN_WIDTH = 1280;
 
 // ウィンドウ縦幅
-const int WIN_HEIGHT = 400;
+const int WIN_HEIGHT = 720;
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine,
                    _In_ int nCmdShow) {
@@ -39,8 +41,33 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	// 画像などのリソースデータの変数宣言と読み込み
 
 
-	// ゲームループで使う変数の宣言
 
+	// ゲームループで使う変数の宣言
+	
+
+	//--------マウス用変数---------//
+	int MouseX = 0;
+	int MouseY = 0;
+	int MouseR = 16;
+	int MouseInput = 0;
+
+	//---------シーン---------------//
+	int scene = 0;
+
+	//--------ボス--------------//
+	Boss* boss = nullptr;
+	boss = new Boss();
+
+	int bossX = boss->GetPosX(),
+		bossY = boss->GetPosY(),
+		bossR = boss->GetPosR();
+
+	//-------------兵士-----------------------//
+	std::list<std::unique_ptr<Solider>>soliders;
+	Solider* solider = nullptr;
+	const int solBornTime = 5;
+	int solBorn = solBornTime;
+	int solNo = 5;
 
 	// 最新のキーボード情報用
 	char keys[256] = {0};
@@ -60,13 +87,101 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		// 画面クリア
 		ClearDrawScreen();
+		//マウス座標
+		GetMousePoint(&MouseX, &MouseY);
+		//マウス入力
+		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
 
-		// 更新処理
+#pragma region 更新処理
+
+		//-------------------------兵士---------------------//
+		//死んだ兵士を削除
+		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
+			return solider->IsDead();
+			});
+		//左クリックで兵士が生まれる
+		if (MouseInput & MOUSE_INPUT_LEFT)
+		{
+			solBorn--;
+		}
+		if (solBorn <= 0 && solNo > 0)
+		{
+			//兵を初期化,登録する
+			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
+			newSolider->initialize(MouseX, MouseY);
+			soliders.push_back(std::move(newSolider));
+			solNo--;
+			//カウントダウンリセット
+			solBorn = solBornTime;
+		}
+
+		//兵士毎フレーム処理
+		for (std::unique_ptr<Solider>& solider : soliders)
+		{
+			solider->Update(bossX,bossY,bossR);
+			//右クリックで兵士を消す・solNo+1
+			if (MouseInput & MOUSE_INPUT_RIGHT)
+			{
+				solider->Eraser(MouseX, MouseY, MouseR, solNo);
+		
+			}
+		}
+
+		switch (scene)
+		{
+		case 0: //タイトル
+
+			break;
+
+		case 1: //操作説明
+
+			break;
+
+		case 2: //プレイ画面
+
+			break;
+
+		case 3: //ゲームクリア
+
+			break;
+
+		case 4: //ゲームオーバー
+
+			break;
+
+		}
+
+		boss->Update();
+
+#pragma endregion
 
 
-		// 描画処理
+#pragma region 描画処理
 
+		//----ボス------------//
+		boss->Draw();
+
+		//----------------------兵士--------------------//
+		for (std::unique_ptr<Solider>& solider : soliders)
+		{
+			solider->Draw();
+		}
+
+		//----マウス----------//
+		if (MouseInput & MOUSE_INPUT_LEFT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
+		}
+		else
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
+		}
+
+		//----真ん中の線------//
+		DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
+
+#pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
 		ScreenFlip();
