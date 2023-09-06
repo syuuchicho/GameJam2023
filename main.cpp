@@ -1,5 +1,5 @@
 #include "DxLib.h"
-
+#include "solider.h"
 // ウィンドウのタイトルに表示する文字列
 const char TITLE[] = "xx2x_xx_ナマエ: タイトル";
 
@@ -10,7 +10,7 @@ const int WIN_WIDTH = 800;
 const int WIN_HEIGHT = 800;
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine,
-                   _In_ int nCmdShow) {
+	_In_ int nCmdShow) {
 	// ウィンドウモードに設定
 	ChangeWindowMode(TRUE);
 
@@ -40,18 +40,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	// ゲームループで使う変数の宣言
-	
 	//--------マウス用変数---------//
 	int MouseX = 0;
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
+	//インスタンス
+	std::list<std::unique_ptr<Solider>>soliders;
+	Solider* solider = nullptr;
+
 
 	// 最新のキーボード情報用
-	char keys[256] = {0};
+	char keys[256] = { 0 };
 
 	// 1ループ(フレーム)前のキーボード情報
-	char oldkeys[256] = {0};
+	char oldkeys[256] = { 0 };
 
 	// ゲームループ
 	while (true) {
@@ -72,10 +75,25 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//---------  ここからプログラムを記述  ----------//
 
 		// 更新処理
+		//デスフラグのたった敵を削除
+		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
+			return solider->IsDead();
+			});
 
+		if (MouseInput & MOUSE_INPUT_LEFT)
+		{
+			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
+			newSolider->initialize(MouseX, MouseY);
+
+			//敵を登録する
+			soliders.push_back(std::move(newSolider));
+		}
+		for (std::unique_ptr<Solider>& solider : soliders)
+		{
+			solider->Update();
+		}
 
 		// 描画処理
-		
 		//----マウス----------//
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
@@ -84,6 +102,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		else
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
+		}
+		//兵士
+		for (std::unique_ptr<Solider>& solider : soliders)
+		{
+			solider->Draw();
 		}
 
 		//---------  ここまでにプログラムを記述  ---------//
@@ -103,6 +126,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			break;
 		}
 	}
+	delete solider;
 	// Dxライブラリ終了処理
 	DxLib_End();
 

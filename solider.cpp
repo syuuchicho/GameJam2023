@@ -1,17 +1,18 @@
 #include "solider.h"
 #include "DxLib.h"
-void solider::initialize(int& posX, int& posY)
+void Solider::initialize(int& posX, int& posY)
 {
 	this->posX = posX;
 	this->posY = posY;
 }
 
-void solider::Update()
+void Solider::Update()
 {
-
+	//‰EˆÚ“®
+	posX += speed;
 }
 
-void solider::Draw()
+void Solider::Draw()
 {
 	int posX2 = posX + radius;
 	int posY2 = posY + radius;
