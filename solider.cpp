@@ -19,7 +19,7 @@ void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
 	if (( atkRadius+enemyRadius ) * ( atkRadius+enemyRadius) 
 		< (enemyX - pos.x) * (enemyX - pos.x) + (enemyY - pos.y) * (enemyY- pos.y))
 	{
-		pos += len;
+		pos += velocity;
 	}
 }
 
