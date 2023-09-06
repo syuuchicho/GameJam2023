@@ -1,13 +1,15 @@
 #include "DxLib.h"
 #include "solider.h"
+#include "Boss.h"
+
 // ウィンドウのタイトルに表示する文字列
-const char TITLE[] = "xx2x_xx_ナマエ: タイトル";
+const char TITLE[] = "GameJam2023";
 
 // ウィンドウ横幅
-const int WIN_WIDTH = 800;
+const int WIN_WIDTH = 1280;
 
 // ウィンドウ縦幅
-const int WIN_HEIGHT = 800;
+const int WIN_HEIGHT = 720;
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine,
 	_In_ int nCmdShow) {
@@ -39,16 +41,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	// 画像などのリソースデータの変数宣言と読み込み
 
 
+
 	// ゲームループで使う変数の宣言
+
+
 	//--------マウス用変数---------//
 	int MouseX = 0;
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
-	//テスト用エネミー変数
-	int enemyX = 600;
-	int enemyY = 400;
-	int enemyR = 10;
+
+	//---------シーン---------------//
+	int scene = 0;
+
+	//--------ボス--------------//
+	Boss* boss = nullptr;
+	boss = new Boss();
+
+	int bossX = boss->GetPosX(),
+		bossY = boss->GetPosY(),
+		bossR = boss->GetPosR();
+
 	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
@@ -79,7 +92,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//マウス入力
 		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
+
 #pragma region 更新処理
+
 		//-------------------------兵士---------------------//
 		//死んだ兵士を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
@@ -90,52 +105,82 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			solBorn--;
 		}
-		if (solBorn <= 0&&solNo>0)
+		if (solBorn <= 0 && solNo > 0)
 		{
 			//兵を初期化,登録する
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 			newSolider->initialize(MouseX, MouseY);
-
 			soliders.push_back(std::move(newSolider));
 			solNo--;
 			//カウントダウンリセット
 			solBorn = solBornTime;
 		}
+
 		//兵士毎フレーム処理
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
-			solider->Update(enemyX, enemyY, enemyR);
+			solider->Update(bossX, bossY, bossR);
 			//右クリックで兵士を消す・solNo+1
 			if (MouseInput & MOUSE_INPUT_RIGHT)
 			{
-				solider->Eraser(MouseX, MouseY, MouseR,solNo);
+				solider->Eraser(MouseX, MouseY, MouseR, solNo);
+
 			}
 		}
+
+		//-------------------シーン管理-----------------------//
+		switch (scene)
+		{
+		case 0: //タイトル
+
+			break;
+
+		case 1: //操作説明
+
+			break;
+
+		case 2: //プレイ画面
+
+			break;
+
+		case 3: //ゲームクリア
+
+			break;
+
+		case 4: //ゲームオーバー
+
+			break;
+
+		}
+		//-------------------ボス---------------//
+		boss->Update();
+
 #pragma endregion
-		
+
 #pragma region 描画処理
-		//----------------------マウス----------------//
-		if (MouseInput & MOUSE_INPUT_LEFT)
-		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);//赤
-		}
-		else if (MouseInput & MOUSE_INPUT_RIGHT)
-		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);//青
-		}
-		else
-		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);//白
-		}
+
+		//----ボス------------//
+		boss->Draw();
+
 		//----------------------兵士--------------------//
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Draw();
 		}
-		//----------------------敵-------------------------//
-		DrawCircle(enemyX, enemyY, enemyR, GetColor(255, 0, 0), true);
 
-		DrawFormatString(20, 20, GetColor(255, 255, 255), "solNo:%d", solNo);
+		//----マウス----------//
+		if (MouseInput & MOUSE_INPUT_LEFT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
+		}
+		else
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
+		}
+
+		//----真ん中の線------//
+		DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
+
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
@@ -155,6 +200,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 	}
 	delete solider;
+	delete boss;
 	// Dxライブラリ終了処理
 	DxLib_End();
 
