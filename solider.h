@@ -6,7 +6,7 @@ class Solider
 {
 public:
 	void initialize(int& posX, int& posY);
-	void Update(int&enemyX,int&enemyY);
+	void Update(int&enemyX,int&enemyY,int&enemyRadius);
 	void Draw();
 
 	bool IsDead() const { return isDead_; }
@@ -17,6 +17,7 @@ private:
 	Vector2 len = { 0,0 };
 	Vector2 velocity = { 0,0 };
 	int radius = 16;
+	int atkRadius = 32;
 	int speed = 4;
 	bool isDead_ = false;
 

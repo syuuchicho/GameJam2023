@@ -48,7 +48,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//テスト用エネミー変数
 	int enemyX = 600;
 	int enemyY = 400;
-	int enemyR = 100;
+	int enemyR = 10;
 
 	//----------------------------インスタンス-----------------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
@@ -104,7 +104,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
-			solider->Update(enemyX,enemyY);
+			solider->Update(enemyX,enemyY,enemyR);
 		}
 #pragma endregion
 
