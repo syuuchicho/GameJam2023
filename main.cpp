@@ -48,7 +48,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//インスタンス
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
-
+	const int solBornTime = 5;
+	int solBorn = solBornTime;
 
 	// 最新のキーボード情報用
 	char keys[256] = { 0 };
@@ -75,19 +76,29 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//---------  ここからプログラムを記述  ----------//
 
 		// 更新処理
-		//デスフラグのたった敵を削除
+		//デスフラグのたった兵を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 			return solider->IsDead();
 			});
-
+		//兵が生まれるカウントダウン
 		if (MouseInput & MOUSE_INPUT_LEFT)
 		{
+			solBorn--;
+		}
+		//生まれる
+		if (solBorn<=0)
+		{
+			//兵を初期化,登録する
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 			newSolider->initialize(MouseX, MouseY);
 
-			//敵を登録する
 			soliders.push_back(std::move(newSolider));
+			//カウントダウンリセット
+			solBorn = solBornTime;
 		}
+
+
+		//更新
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Update();
