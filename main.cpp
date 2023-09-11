@@ -38,13 +38,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	// (ダブルバッファ)描画先グラフィック領域は裏面を指定
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	// 画像などのリソースデータの変数宣言と読み込み
-
-
-
 	// ゲームループで使う変数の宣言
-
-
 	//--------マウス用変数---------//
 	int MouseX = 0;
 	int MouseY = 0;
@@ -68,6 +62,20 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
 	int solNo = 5;
+
+	// 画像などのリソースデータ変数宣言
+	//兵士
+	int soliderGH = 0;
+	int soliderWalkGH[4] = {};
+	int soliderAtkGH[4] = {};
+
+	// 画像などのリソースデータ読み込み
+	//兵士
+	soliderGH = LoadGraph("Resource/solider.png");
+	//兵士歩行
+	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
+	//兵士攻撃
+	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
 
 	// 最新のキーボード情報用
 	char keys[256] = { 0 };
@@ -109,7 +117,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			//兵を初期化,登録する
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
-			newSolider->initialize(MouseX, MouseY);
+			newSolider->initialize(MouseX, MouseY,soliderGH,soliderWalkGH, soliderAtkGH);
 			soliders.push_back(std::move(newSolider));
 			solNo--;
 			//カウントダウンリセット
@@ -124,7 +132,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			if (MouseInput & MOUSE_INPUT_RIGHT)
 			{
 				solider->Eraser(MouseX, MouseY, MouseR, solNo);
-
 			}
 		}
 
@@ -165,7 +172,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//----------------------兵士--------------------//
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
-			solider->Draw();
+			solider->Draw(soliderGH);
 		}
 
 		//----マウス----------//
