@@ -43,5 +43,7 @@ void Solider::Draw()
 	
 	//UŒ‚”ÍˆÍ
 	DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
+
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "%d", Hp);
 }
 

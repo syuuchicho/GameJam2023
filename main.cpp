@@ -62,12 +62,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		bossY = boss->GetPosY(),
 		bossR = boss->GetPosR();
 
+	
+
 	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
 	int solNo = 5;
+
+	int playerX = 0,
+		playerY = 0,
+		playerR = 0;
+
+
+	int flag = 0;
 
 	// 最新のキーボード情報用
 	char keys[256] = {0};
@@ -96,6 +105,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #pragma region 更新処理
 
 		//-------------------------兵士---------------------//
+			
 		//死んだ兵士を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 			return solider->IsDead();
@@ -124,10 +134,44 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			if (MouseInput & MOUSE_INPUT_RIGHT)
 			{
 				solider->Eraser(MouseX, MouseY, MouseR, solNo);
-		
+			}
+			playerX = solider->GetPosX(),
+			playerY = solider->GetPosY(),
+			playerR = solider->GetPosR();
+		}
+		//-----------ボス-----------------------//
+
+		int meteorX = boss->GetMeteorX(),
+			meteorY = boss->GetMeteorY(),
+			meteorR = boss->GetMeteorR(),
+			meteorX1 = boss->GetMeteorX1(),
+			meteorY1 = boss->GetMeteorY1(),
+			meteorR1 = boss->GetMeteorR1();
+
+		boss->Update();
+		//メテオが予兆の時は当たらない判定
+		if (boss->attackflag == 1)
+		{
+			//メテオ1(円)とプレイヤーの当たり判定
+			if ((meteorR + playerR) * (meteorR + playerR)
+				>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY))
+			{
+				//後でHpが減る処理を追加--------------
+				flag = 1;
+				DrawFormatString(0, 140, GetColor(255, 0, 0), "%d", flag);
+			}
+			//メテオ2(円)とプレイヤーの当たり判定
+			if ((playerR + meteorR1) * (playerR + meteorR1)
+				>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1))
+			{
+				//後でHpが減る処理を追加--------------
+				flag = 1;
+				DrawFormatString(0, 140, GetColor(255, 0, 0), "%d", flag);
 			}
 		}
+		
 
+		//--------シーン-----------------------//
 		switch (scene)
 		{
 		case 0: //タイトル
@@ -152,7 +196,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		}
 
-		boss->Update();
+		
+
+		
 
 #pragma endregion
 
@@ -181,6 +227,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//----真ん中の線------//
 		DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
 
+
+		DrawFormatString(0, 200, GetColor(255, 255, 255), "メテオ1/%d:%d:%d", meteorX, meteorY, meteorR);
+		DrawFormatString(0, 220, GetColor(255, 255, 255), "メテオ2/%d:%d:%d", meteorX1, meteorY1, meteorR1);
+		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
+
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
@@ -199,6 +250,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			break;
 		}
 	}
+
+	delete solider;
+	delete boss;
+
 	// Dxライブラリ終了処理
 	DxLib_End();
 

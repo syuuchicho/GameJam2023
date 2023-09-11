@@ -4,7 +4,7 @@
 
 void Boss::Initialize() 
 {
-
+	
 }
 
 void Boss::Meteor()
@@ -58,8 +58,8 @@ void Boss::Meteor()
 
 		bossCount++;
 		//隕石の座標
-		meteorX = 750, meteorY = 320;
-		meteorX1 = 960, meteorY1 = 620;
+		meteorX = 890, meteorY = 360;
+		meteorX1 = 590, meteorY1 = 360;
 
 		//カウント120超えたら予兆から攻撃に変化
 		if (bossCount > 120)
@@ -79,8 +79,8 @@ void Boss::Meteor()
 
 		bossCount++;
 		//隕石の座標
-		meteorX = 720, meteorY = 400;
-		meteorX1 = 950, meteorY1 = 320;
+		meteorX = 720, meteorY = 200;
+		meteorX1 = 750, meteorY1 = 590;
 
 		//カウント120超えたら予兆から攻撃に変化
 		if (bossCount > 120)
@@ -133,6 +133,23 @@ void Boss::Update()
 
 }
 
+void Boss::Collider(int& playerX, int& playerY, int& playerR)
+{
+	//メテオ1(円)とプレイヤーの当たり判定
+	if ((meteorR + playerR) * (meteorR + playerR)
+		>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY))
+	{
+		
+	}
+	//メテオ2(円)とプレイヤーの当たり判定
+	if ((playerR + meteorR1) * (playerR + meteorR1)
+		>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1))
+	{
+		
+	}
+	
+}
+
 void Boss::Draw()
 {
 	//ボスの描画
@@ -146,22 +163,22 @@ void Boss::Draw()
 		switch (pattern)
 		{
 		case 0:
-			DrawCircle(meteorX, meteorY, radius + 30, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, radius + 10, GetColor(255, 0, 255), false);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), false);
+			DrawCircle(meteorX1, meteorY1, meteorR1 , GetColor(255, 0, 255), false);
 			break;
 
 		case 1:
-			DrawCircle(meteorX, meteorY, radius + 20, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, radius + 30, GetColor(255, 0, 255), false);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), false);
+			DrawCircle(meteorX1, meteorY1, meteorR1 , GetColor(255, 0, 255), false);
 			break;
 
 		case 2:
-			DrawCircle(meteorX, meteorY, radius + 40, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, radius + 10, GetColor(255, 0, 255), false);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), false);
+			DrawCircle(meteorX1, meteorY1, meteorR1 , GetColor(255, 0, 255), false);
 			break;
 		case 3:
-			DrawCircle(meteorX, meteorY, radius + 100, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, radius + 100, GetColor(255, 0, 255), false);
+			DrawCircle(meteorX, meteorY, meteorR +40, GetColor(255, 0, 255), false);
+			DrawCircle(meteorX1, meteorY1, meteorR1 +40, GetColor(255, 0, 255), false);
 			break;
 		}
 	}
@@ -171,27 +188,29 @@ void Boss::Draw()
 		switch (pattern)
 		{
 		case 0:
-			DrawCircle(meteorX, meteorY, radius + 30, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, radius + 10, GetColor(255, 0, 255), true);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), true);
+			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), true);
 			break;
 
 		case 1:
-			DrawCircle(meteorX, meteorY, radius + 20, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, radius + 30, GetColor(255, 0, 255), true);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), true);
+			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), true);
 			break;
 
 		case 2:
-			DrawCircle(meteorX, meteorY, radius + 40, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, radius + 10, GetColor(255, 0, 255), true);
+			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), true);
+			DrawCircle(meteorX1, meteorY1, meteorR1 , GetColor(255, 0, 255), true);
 			break;
 		case 3:
-			DrawCircle(meteorX, meteorY, radius + 100, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, radius + 100, GetColor(255, 0, 255), true);
+			DrawCircle(meteorX, meteorY, meteorR +40, GetColor(255, 0, 255), true);
+			DrawCircle(meteorX1, meteorY1, meteorR1 +40, GetColor(255, 0, 255), true);
 			break;
 		}
 	}
 
 	DrawFormatString(0, 20, GetColor(255, 255, 255), "%d", bossCount);
 	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", pattern);
+	DrawFormatString(0, 80, GetColor(255, 255, 255), "%d:%d:%d", meteorX,meteorY,meteorR);
+	DrawFormatString(0, 100, GetColor(255, 255, 255), "%d:%d:%d", meteorX1, meteorY1, meteorR1);
 }
 
