@@ -2,9 +2,6 @@
 #include "solider.h"
 #include "Boss.h"
 
-//テストテスト、gitテスト
-
-
 // ウィンドウのタイトルに表示する文字列
 const char TITLE[] = "GameJam2023";
 
@@ -55,16 +52,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Boss* boss = nullptr;
 	boss = new Boss();
 
-	int bossX = boss->GetPosX(),
-		bossY = boss->GetPosY(),
-		bossR = boss->GetPosR();
+	
 
 	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
-	int solNo = 5;
+	int solNo = 10;
 
 	// 画像などのリソースデータ変数宣言
 	//兵士
@@ -127,10 +122,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			solBorn = solBornTime;
 		}
 
+		int bossX = boss->GetPosX(),
+			bossY = boss->GetPosY(),
+			bossR = boss->GetPosR(),
+			bossHp = boss->GetHp();
+
 		//兵士毎フレーム処理
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Update(bossX, bossY, bossR);
+			solider->Attack(bossX, bossY, bossR, bossHp);
 			//右クリックで兵士を消す・solNo+1
 			if (MouseInput & MOUSE_INPUT_RIGHT)
 			{
@@ -164,7 +165,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		//-------------------ボス---------------//
 		boss->Update();
-
+		boss->SetHp(bossHp);
 #pragma endregion
 
 #pragma region 描画処理

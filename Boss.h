@@ -12,6 +12,9 @@ public:
 	int GetPosX() { return posX; }
 	int GetPosY() { return posY; }
 	int GetPosR() { return radius; }
+	int GetHp() { return hp; }
+	int SetHp(int& bossHp) { return hp = bossHp; }
+
 private:
 
 	void Meteor();
@@ -23,8 +26,8 @@ private:
 	int posY = 360;
 	int radius = 70;
 
-	int hp = 0;
-
+	int hp = 100;
+	int atk = 1;
 	int attackflag = 0;
 
 	//攻撃処理

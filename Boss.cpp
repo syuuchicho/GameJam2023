@@ -193,5 +193,7 @@ void Boss::Draw()
 
 	DrawFormatString(0, 20, GetColor(255, 255, 255), "%d", bossCount);
 	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", pattern);
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Hp:%d", hp);
+
 }
 
