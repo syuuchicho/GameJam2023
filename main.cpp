@@ -2,6 +2,9 @@
 #include "solider.h"
 #include "Boss.h"
 
+//テストテスト、gitテスト
+
+
 // ウィンドウのタイトルに表示する文字列
 const char TITLE[] = "GameJam2023";
 
