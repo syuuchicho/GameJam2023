@@ -173,6 +173,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
 		}
+		else if (MouseInput & MOUSE_INPUT_RIGHT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
+		}
 		else
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
