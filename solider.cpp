@@ -14,7 +14,6 @@ void Solider::initialize(
 		WalkHandle_[i] = WalkHandle[i];
 		AttackHandle_[i] = AttackHandle[i];
 	}
-
 }
 
 void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)

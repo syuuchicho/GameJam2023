@@ -63,17 +63,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	// 画像などのリソースデータ変数宣言
 	//兵士
-	int soliderGH = 0;
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
 
 	// 画像などのリソースデータ読み込み
 	//兵士
-	soliderGH = LoadGraph("Resource/solider.png");
+	int soliderGH = LoadGraph("Resource/solider.png");
+	//背景
+	int backGroundGH = LoadGraph("Resource/backGround.png");
 	//兵士歩行
 	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
 	//兵士攻撃
 	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
+
 
 	// 最新のキーボード情報用
 	char keys[256] = { 0 };
@@ -169,6 +171,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #pragma endregion
 
 #pragma region 描画処理
+		//背景描画
+		DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, backGroundGH, true);
 
 		//----ボス------------//
 		boss->Draw();
@@ -195,7 +199,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		//----真ん中の線------//
 		DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
-
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
@@ -216,6 +219,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 	delete solider;
 	delete boss;
+
+	// 全グラフィックを初期化
+	InitGraph();
+
 	// Dxライブラリ終了処理
 	DxLib_End();
 

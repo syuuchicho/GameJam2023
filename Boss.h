@@ -16,9 +16,7 @@ public:
 	int SetHp(int& bossHp) { return hp = bossHp; }
 
 private:
-
 	void Meteor();
-
 private:
 
 	//座標
