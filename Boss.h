@@ -13,6 +13,7 @@ public:
 
 	//ボスの攻撃関数
 	void Meteor();
+	void Beam();
 
 	void Draw();
 
@@ -46,9 +47,12 @@ private:
 	//攻撃処理-----
 	int bossMove = 0; //攻撃ムーブ
 
+	int patternA = 0; //メテオモーション :パターン 1∼4
 	int bossCount = 0; //攻撃前の予兆
-	int pattern = 0; //メテオモーション :パターン 1∼3
 	int attack_rand = 0; //パターンのランダム変数
+
+	int patternB = 0; //ビームモーション :パターン1∼3
+
 	
 	int meteorX = 0, meteorY = 0, meteorR = 110;//メテオが落ちる座標(1個目)
 	int meteorX1 = 0, meteorY1 = 0, meteorR1 = 120;;//メテオが落ちる座標(2個目)

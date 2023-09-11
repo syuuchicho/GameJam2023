@@ -7,31 +7,32 @@ void Boss::Initialize()
 	
 }
 
+//攻撃関数A
 void Boss::Meteor()
 {
 	//乱数が0∼2だったらパターン1
 	if (attack_rand == 0 || attack_rand == 1 || attack_rand == 2)
 	{
-		pattern = 0;
+		patternA = 0;
 	}
 	//乱数が3∼5だったらパターン2
 	if (attack_rand == 3 || attack_rand == 4 || attack_rand == 5)
 	{
-		pattern = 1;
+		patternA = 1;
 	}
 	//乱数が6∼8だったらパターン3
 	if (attack_rand == 6 || attack_rand == 7 || attack_rand == 8)
 	{
-		pattern = 2;
+		patternA = 2;
 	}
 	//乱数が9だったらパターン4
 	if (attack_rand == 9)
 	{
-		pattern = 3;
+		patternA = 3;
 	}
 
 	srand(time(NULL));//乱数の種
-	switch (pattern)
+	switch (patternA)
 	{
 	case 0: //パターン1
 
@@ -120,6 +121,7 @@ void Boss::Meteor()
 	}
 }
 
+
 void Boss::Update()
 {
 	//攻撃パターン
@@ -160,7 +162,7 @@ void Boss::Draw()
 	//ボスの攻撃(予兆)
 	if (attackflag == 0)
 	{
-		switch (pattern)
+		switch (patternA)
 		{
 		case 0:
 			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), false);
@@ -185,7 +187,7 @@ void Boss::Draw()
 	//ボスの攻撃
 	if (attackflag == 1)
 	{
-		switch (pattern)
+		switch (patternA)
 		{
 		case 0:
 			DrawCircle(meteorX, meteorY, meteorR , GetColor(255, 0, 255), true);
@@ -209,7 +211,7 @@ void Boss::Draw()
 	}
 
 	DrawFormatString(0, 20, GetColor(255, 255, 255), "%d", bossCount);
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", pattern);
+	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", patternA);
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "%d:%d:%d", meteorX,meteorY,meteorR);
 	DrawFormatString(0, 100, GetColor(255, 255, 255), "%d:%d:%d", meteorX1, meteorY1, meteorR1);
 }
