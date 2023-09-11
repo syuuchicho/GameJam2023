@@ -37,6 +37,7 @@ void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
 	{
 		isMove = false;
 	}
+	//移動アニメーションタイマー
 	if (isMove)
 	{
 		moveTimer++;
@@ -64,7 +65,7 @@ void Solider::Draw(int& GraphHandle)
 	int posY2 = pos.y + radius ;
 
 	//DrawBox(pos.x - radius , pos.y - radius , posX2, posY2, GetColor(255, 255, 255), true);
-	//歩行中
+	//移動アニメーション
 	if (isMove)
 	{
 		if (moveTimer<=15)
