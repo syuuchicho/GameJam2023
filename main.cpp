@@ -115,6 +115,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		if (solBorn <= 0 && solNo > 0)
 		{
+			
+
 			//•º‚ğ‰Šú‰»,“o˜^‚·‚é
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 			newSolider->initialize(MouseX, MouseY,soliderGH,soliderWalkGH, soliderAtkGH);
