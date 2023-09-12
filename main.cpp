@@ -39,16 +39,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	// ゲームループで使う変数の宣言
-	//--------マウス用変数---------//
+	//マウス用変数
 	int MouseX = 0;
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
 
-	//---------シーン---------------//
+	//シーン
 	int scene = 0;
 
-	//--------ボス--------------//
+	//ボス
 	Boss* boss = nullptr;
 	boss = new Boss();
 
@@ -59,9 +59,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		bossR = boss->GetPosR(),
 		bossHp = 0;
 
-	
-
-	//-------------兵士-----------------------//
+	//兵士
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
@@ -71,13 +69,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int playerX = 0,
 		playerY = 0,
 		playerR = 0;
-
-	// 画像などのリソースデータ変数宣言
-	//兵士
+	
+	//リソース変数
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
+	int soliderBornSound = 0;
+	int soliderHitSound = 0;
+	//-----------------画像一覧------------------//
+	
 
-	//兵士
 	int soliderGH = LoadGraph("Resource/solider.png");
 	//背景
 	int backGroundGH = LoadGraph("Resource/backGround.png");
@@ -85,6 +85,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
 	//兵士攻撃
 	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
+
+	//-----------------BGM一覧----------------------//
+	soliderBornSound= LoadSoundMem("BGM/soliderBorn.mp3");
+	soliderHitSound = LoadSoundMem("BGM/punch.mp3");
 
 
 	// 最新のキーボード情報用
@@ -135,6 +139,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			//兵を初期化,登録する
 			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 			newSolider->initialize(MouseX, MouseY,soliderGH,soliderWalkGH, soliderAtkGH);
+			//兵士が生まれる効果音
+			PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
 			soliders.push_back(std::move(newSolider));
 			solNo--;
 			//カウントダウンリセット
@@ -150,7 +156,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		for (std::unique_ptr<Solider>& solider : soliders)
 		{
 			solider->Update(bossX, bossY, bossR);
-			solider->Attack(bossX, bossY, bossR, bossHp);
+			solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
 			//右クリックで兵士を消す・solNo+1
 			if (MouseInput & MOUSE_INPUT_RIGHT)
 			{
@@ -183,16 +189,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		}
 		//-------------------ボス---------------//
-
-		bossX = boss->GetPosX(),
-		bossY = boss->GetPosY(),
-		bossR = boss->GetPosR(),
-		bossHp = boss->GetHp();
-
-		boss->Update();
 		boss->SetHp(bossHp);
+		boss->Update();
 		//メテオが予兆の時は当たらない判定
-		//if (boss->attackflag == 1)
+		if (boss->attackflag == 1)
 		{
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{

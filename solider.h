@@ -13,7 +13,7 @@ public:
 		int AttackHandle[]);
 	void Update(int&enemyX,int&enemyY,int&enemyRadius);
 	void Eraser(int& MousePosX, int& MousePosY,int&MouseRadius,int&solNo );
-	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp);
+	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,int&HitSound);
 	void Draw(int&GraphHandle);
 
 	int GetPosX() { return pos.x; }
