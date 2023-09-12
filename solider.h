@@ -16,9 +16,12 @@ public:
 	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp);
 	void Draw(int&GraphHandle);
 
+	int GetPosX() { return pos.x; }
+	int GetPosY() { return pos.y; }
+	int GetPosR() { return radius; }
+
 	bool IsDead() const { return isDead_; }
 	bool Dead() { return isDead_ = true; }
-
 private:
 	Vector2 pos = { 0,0 };
 	Vector2 len = { 0,0 };
