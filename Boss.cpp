@@ -2,31 +2,31 @@
 #include "DxLib.h"
 #include <time.h>
 
-void Boss::Initialize() 
+void Boss::Initialize()
 {
-	
+	LoadDivGraph("Resource/Boss1.png", 3, 3, 1, 320, 320, BossGH);
 }
 
 //攻撃関数A
 void Boss::Meteor()
 {
 	//乱数が0∼2だったらパターン1
-	if (attack_rand == 0 || attack_rand == 1 || attack_rand == 2)
+	if (attack_randA == 0 || attack_randA == 1 || attack_randA == 2)
 	{
 		patternA = 0;
 	}
 	//乱数が3∼5だったらパターン2
-	if (attack_rand == 3 || attack_rand == 4 || attack_rand == 5)
+	if (attack_randA == 3 || attack_randA == 4 || attack_randA == 5)
 	{
 		patternA = 1;
 	}
 	//乱数が6∼8だったらパターン3
-	if (attack_rand == 6 || attack_rand == 7 || attack_rand == 8)
+	if (attack_randA == 6 || attack_randA == 7 || attack_randA == 8)
 	{
 		patternA = 2;
 	}
 	//乱数が9だったらパターン4
-	if (attack_rand == 9)
+	if (attack_randA == 9)
 	{
 		patternA = 3;
 	}
@@ -50,7 +50,7 @@ void Boss::Meteor()
 		//カウント200超えたらパターンが変わる
 		if (bossCount > 200)
 		{
-			attack_rand = rand() % 10 ;
+			attack_randA = rand() % 10 ;
 			bossCount = 0;
 			attackflag = 0;
 		}
@@ -71,7 +71,7 @@ void Boss::Meteor()
 		//カウント200超えたらパターンが変わる
 		if (bossCount > 200)
 		{
-			attack_rand = rand() % 10;
+			attack_randA = rand() % 10;
 			bossCount = 0;
 			attackflag = 0;
 		}
@@ -92,7 +92,7 @@ void Boss::Meteor()
 		//カウント200超えたらパターンが変わる
 		if (bossCount > 200)
 		{
-			attack_rand = rand() % 10;
+			attack_randA = rand() % 10;
 			bossCount = 0;
 			attackflag = 0;
 		}
@@ -113,7 +113,7 @@ void Boss::Meteor()
 		//カウント200超えたらパターンが変わる
 		if (bossCount > 200)
 		{
-			attack_rand = rand() % 10;
+			attack_randA = rand() % 10;
 			bossCount = 0;
 			attackflag = 0;
 		}
@@ -121,9 +121,15 @@ void Boss::Meteor()
 	}
 }
 
+void Boss::Beam()
+{
+	
+}
 
 void Boss::Update()
 {
+	timer++;
+
 	//攻撃パターン
 	switch (bossMove)
 	{
@@ -135,29 +141,32 @@ void Boss::Update()
 
 }
 
-void Boss::Collider(int& playerX, int& playerY, int& playerR)
-{
-	//メテオ1(円)とプレイヤーの当たり判定
-	if ((meteorR + playerR) * (meteorR + playerR)
-		>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY))
-	{
-		
-	}
-	//メテオ2(円)とプレイヤーの当たり判定
-	if ((playerR + meteorR1) * (playerR + meteorR1)
-		>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1))
-	{
-		
-	}
-	
-}
 
 void Boss::Draw()
 {
 	//ボスの描画
-	DrawCircle(posX, posY, radius, GetColor(255, 0, 0), true);
+	if (timer <= 10)
+	{
+		DrawGraph(posX, posY, BossGH[0], true);
+	}
+	if (timer > 10 && timer <= 20)
+	{
+		DrawGraph(posX, posY, BossGH[1], true);
+	}
+	if (timer > 20 && timer <= 30)
+	{
+		DrawGraph(posX, posY, BossGH[2], true);
+	}
+	if (timer == 30)
+	{
+		DrawGraph(posX, posY, BossGH[0], true);
+		timer = 0;
+	}
+
+
+	
 	//ボスの攻撃範囲
-	DrawCircle(posX - 50, posY, radius + 50, GetColor(255, 0, 0), false);
+	DrawCircle(posX , posY, radius + 50, GetColor(255, 0, 0), false);
 
 	//ボスの攻撃(予兆)
 	if (attackflag == 0)
@@ -214,5 +223,7 @@ void Boss::Draw()
 	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", patternA);
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "%d:%d:%d", meteorX,meteorY,meteorR);
 	DrawFormatString(0, 100, GetColor(255, 255, 255), "%d:%d:%d", meteorX1, meteorY1, meteorR1);
+	DrawFormatString(0, 120, GetColor(255, 255, 255), "%d", timer);
+	DrawFormatString(0, 140, GetColor(255, 255, 255), "ボス Hp:%d", hp);
 }
 
