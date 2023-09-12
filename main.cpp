@@ -43,7 +43,26 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	// ゲームループで使う変数の宣言
+
+	//------------BGM--------------
+	int titleBGM = LoadSoundMem("BGM/title.mp3"); //タイトルBGM
+	int playBGM = LoadSoundMem("BGM/playing.mp3");   //プレイBGM
+	int clearBGM = LoadSoundMem("BGM/gameClear.mp3"); //クリアBGM
+	int overBGM = LoadSoundMem("BGM/gameOver.mp3");   //オーバーBGM
+
+	///////BGM音量//////////
+	ChangeVolumeSoundMem(100, titleBGM);
+	ChangeVolumeSoundMem(100, playBGM);
+	ChangeVolumeSoundMem(100, clearBGM);
+	ChangeVolumeSoundMem(100, overBGM);
+
+	//----------SE--------
+	int soliderBornSound = LoadSoundMem("BGM/soliderBorn.mp3"); //プレイヤーを出す
+	int soliderHitSound = LoadSoundMem("BGM/punch.mp3");        //攻撃音
 	
+	///////SE音量//////////
+	ChangeVolumeSoundMem(100, soliderBornSound);
+	ChangeVolumeSoundMem(150, soliderHitSound);
 
 	//--------マウス用変数---------//
 	int MouseX = 0;
@@ -140,6 +159,17 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 		case 0: //タイトル
 
+			//BGM停止
+			StopSoundMem(clearBGM); //クリア
+			StopSoundMem(overBGM);  //オーバー
+
+			//タイトルBGMを最初からリスタート
+			if (CheckSoundMem(titleBGM) == 0)
+			{
+				PlaySoundMem(titleBGM, DX_PLAYTYPE_BACK, true);
+			}
+
+			//クリックで次のシーン
 			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 0)
 			{
 				scene = 1;
@@ -156,7 +186,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 2: //プレイ画面
 
+			//BGM停止
+			StopSoundMem(titleBGM); //タイトル
+			StopSoundMem(overBGM);  //オーバー(ゲームオーバーからプレイシーンでリトライできるように)
 			
+			//プレイBGM再生
+			if (CheckSoundMem(playBGM) == 0)
+			{
+				PlaySoundMem(playBGM, DX_PLAYTYPE_LOOP, true);
+			}
+
 			//-------------------------兵士---------------------//
 
 			//死んだ兵士を削除
@@ -173,6 +212,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//兵を初期化,登録する
 				std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
 				newSolider->initialize(MouseX, MouseY, soliderGH, soliderWalkGH, soliderAtkGH);
+
+				//兵士が生まれる効果音
+				PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
+
 				soliders.push_back(std::move(newSolider));
 				solNo--;
 				//カウントダウンリセット
@@ -189,7 +232,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
 				solider->Update(bossX, bossY, bossR);
-				solider->Attack(bossX, bossY, bossR, bossHp);
+				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
@@ -210,15 +253,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				for (std::unique_ptr<Solider>& solider : soliders)
 				{
-					//メテオ1(円)とプレイヤーの当たり判定
+					playerX = solider->GetPosX(),
+						playerY = solider->GetPosY(),
+						playerR = solider->GetPosR();
+					//メテオ1(円)とプレイヤーの当たり判定・メテオ2(円)とプレイヤーの当たり判定
 					if ((meteorR + playerR) * (meteorR + playerR)
-						>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY))
-					{
-						solider->Dead();
-					}
-					//メテオ2(円)とプレイヤーの当たり判定
-					if ((playerR + meteorR1) * (playerR + meteorR1)
-						>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1))
+						>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY)
+						||
+						((playerR + meteorR1) * (playerR + meteorR1)
+							>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1)))
 					{
 						//当たったら消える
 						solider->Dead();
@@ -230,9 +273,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 3: //ゲームクリア
 
+			//プレイBGM停止
+			StopSoundMem(playBGM);
+
+			//クリアBGM再生
+			if (CheckSoundMem(clearBGM) == 0)
+			{
+				PlaySoundMem(clearBGM, DX_PLAYTYPE_LOOP, true);
+			}
+
 			break;
 
 		case 4: //ゲームオーバー
+
+			//プレイBGM停止
+			StopSoundMem(playBGM);
+
+			//オーバーBGM再生
+			if (CheckSoundMem(overBGM) == 0)
+			{
+				PlaySoundMem(overBGM, DX_PLAYTYPE_LOOP, true);
+			}
 
 			break;
 
