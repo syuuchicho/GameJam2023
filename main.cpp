@@ -52,16 +52,23 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Boss* boss = nullptr;
 	boss = new Boss();
 
+	boss->Initialize();
+
 	int bossX = boss->GetPosX(),
 		bossY = boss->GetPosY(),
-		bossR = boss->GetPosR();
+		bossR = boss->GetPosR(),
+		bossHp = 0;
 
 	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
-	int solNo = 5;
+	int solNo = 100;
+
+	int playerX = 0,
+		playerY = 0,
+		playerR = 0;
 
 	// 画像などのリソースデータ変数宣言
 	//兵士
@@ -69,7 +76,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
 
-	// 画像などのリソースデータ読み込み
 	//兵士
 	soliderGH = LoadGraph("Resource/solider.png");
 	//兵士歩行
@@ -103,6 +109,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 #pragma region 更新処理
 
+		int meteorX = boss->GetMeteorX(),
+			meteorY = boss->GetMeteorY(),
+			meteorR = boss->GetMeteorR(),
+			meteorX1 = boss->GetMeteorX1(),
+			meteorY1 = boss->GetMeteorY1(),
+			meteorR1 = boss->GetMeteorR1();
+
 		//-------------------------兵士---------------------//
 		//死んだ兵士を削除
 		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
@@ -133,6 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				solider->Eraser(MouseX, MouseY, MouseR, solNo);
 			}
+				
 		}
 
 		//-------------------シーン管理-----------------------//
@@ -160,8 +174,34 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		}
 		//-------------------ボス---------------//
-		boss->Update();
 
+		bossX = boss->GetPosX(),
+		bossY = boss->GetPosY(),
+		bossR = boss->GetPosR(),
+		bossHp = boss->GetHp();
+
+		boss->Update();
+		boss->SetHp(bossHp);
+		//メテオが予兆の時は当たらない判定
+		//if (boss->attackflag == 1)
+		{
+			for (std::unique_ptr<Solider>& solider : soliders)
+			{
+					playerX = solider->GetPosX(),
+					playerY = solider->GetPosY(),
+					playerR = solider->GetPosR();
+				//メテオ1(円)とプレイヤーの当たり判定・メテオ2(円)とプレイヤーの当たり判定
+				if ((meteorR + playerR) * (meteorR + playerR)
+					>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY)
+					||
+					((playerR + meteorR1) * (playerR + meteorR1)
+					>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1)))
+				{
+					//当たったら消える
+					solider->Dead();
+				}
+			}
+		}
 #pragma endregion
 
 #pragma region 描画処理

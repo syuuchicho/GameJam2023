@@ -15,9 +15,12 @@ public:
 	void Eraser(int& MousePosX, int& MousePosY,int&MouseRadius,int&solNo );
 	void Draw(int&GraphHandle);
 
+	int GetPosX() { return pos.x; }
+	int GetPosY() { return pos.y; }
+	int GetPosR() { return radius; }
+
 	bool IsDead() const { return isDead_; }
 	bool Dead() { return isDead_ = true; }
-
 private:
 	int Hp = 0;
 	Vector2 pos = { 0,0 };
