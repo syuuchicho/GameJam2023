@@ -84,15 +84,6 @@ void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, i
 	}
 }
 
-void Solider::Reset()
-{
-	isMove = false;
-	isAttack = false;
-	isDead_ = false;
-	moveTimer = 0;
-	atkTimer = 0;
-
-}
 
 void Solider::Draw(int& GraphHandle)
 {
@@ -150,5 +141,10 @@ void Solider::Draw(int& GraphHandle)
 	//DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
 
 	/*DrawFormatString(0, 160, GetColor(255, 255, 255), "ÉvÉåÉCÉÑÅ[ Hp:%d", hp);*/
+}
+
+void Solider::Reset()
+{
+	isDead_ = true;
 }
 

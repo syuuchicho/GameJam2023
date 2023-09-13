@@ -323,14 +323,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 3: //ゲームクリア
 
-			//初期化
-			boss->Reset();
+			
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
-				solider->Dead();
 				solider->Reset();
 			}
-
+			//初期化
+			boss->Reset();
+			bossHp = 100;
 			solNo = 50;
 			solAlive = 0;
 
@@ -352,13 +352,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 4: //ゲームオーバー
 
-			//初期化
-			boss->Reset();
+			
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
-				solider->Dead();
 				solider->Reset();
 			}
+			//初期化
+			boss->Reset();
+			bossHp = 100;
 			solNo = 50;
 			solAlive = 0;
 
@@ -463,6 +464,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
 		}
+		else if (MouseInput & MOUSE_INPUT_RIGHT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
+		}
 		else
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
@@ -470,7 +475,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		/*DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
 		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);*/
-		DrawFormatString(0, 280, GetColor(255, 255, 255), "%d", solAlive);
+		/*DrawFormatString(0, 280, GetColor(255, 255, 255), "%d", solAlive);*/
 
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
