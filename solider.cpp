@@ -68,7 +68,7 @@ void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solN
 	}
 }
 
-void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,int& HitSound)
+void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,int& HitSound,bool& bossIsHit)
 {
 	//É{ÉXÇ∆ÇÃçUåÇìñÇΩÇËîªíË
 	if (isAttack&&atkTimer==59)
@@ -78,6 +78,7 @@ void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,in
 		{
 			PlaySoundMem(HitSound, DX_PLAYTYPE_BACK, true);
 			bossHp -= 1;
+			bossIsHit = true;
 		}
 	}
 }

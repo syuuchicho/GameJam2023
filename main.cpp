@@ -58,6 +58,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		bossY = boss->GetPosY(),
 		bossR = boss->GetPosR(),
 		bossHp = 0;
+	bool bossIsHit = false;
 
 	//兵士
 	std::list<std::unique_ptr<Solider>>soliders;
@@ -202,7 +203,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
 				solider->Update(bossX, bossY, bossR);
-				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
+				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound,bossIsHit);
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
@@ -211,6 +212,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 #pragma endregion
 			#pragma region ボス処理
+			boss->SetIsHit(bossIsHit);
 			boss->Update();
 			boss->SetHp(bossHp);
 			//メテオが予兆の時は当たらない判定
@@ -233,6 +235,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					}
 				}
 			}
+			bossIsHit = false;
 #pragma endregion
 			break;
 		case 3: //ゲームクリア

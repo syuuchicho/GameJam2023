@@ -25,6 +25,8 @@ public:
 	int GetHp() { return hp; }
 	int SetHp(int& bossHp) { return hp = bossHp; }
 
+	int SetIsHit(bool& bossIsHit) { return IsHit = bossIsHit; }
+
 	int attackflag = 0; //予兆と攻撃のフラグ
 
 private:
@@ -34,7 +36,6 @@ private:
 	void Beam();
 
 private:
-
 
 	int hp = 100; //HP
 
@@ -46,6 +47,7 @@ private:
 	int radius = 70;
 
 	int BossGH[3] = {};
+	int BossHitGH[3] = {};
 
 
 	//攻撃処理-----
@@ -65,4 +67,5 @@ private:
 
 	int timer = 0;
 
+	bool IsHit = false;
 };

@@ -5,6 +5,8 @@
 void Boss::Initialize()
 {
 	LoadDivGraph("Resource/Boss1.png", 3, 3, 1, 320, 320, BossGH);
+	LoadDivGraph("Resource/GetDamage.png", 3, 3, 1, 320, 320, BossHitGH);
+
 }
 
 //攻撃関数A
@@ -129,6 +131,10 @@ void Boss::Beam()
 void Boss::Update()
 {
 	timer++;
+	if (timer == 30)
+	{
+		timer = 0;
+	}
 
 	//攻撃パターン
 	switch (bossMove)
@@ -136,7 +142,6 @@ void Boss::Update()
 	case 0:
 		Meteor();
 		break;
-
 	}
 
 }
@@ -145,24 +150,34 @@ void Boss::Update()
 void Boss::Draw()
 {
 	//ボスの描画
-	if (timer <= 10)
+	if (IsHit)//ダメージを受けたら
+	{
+		if (timer <= 10)
+		{
+			DrawGraph(posX, posY, BossHitGH[0], true);
+		}
+		if (timer > 10 && timer <= 20)
+		{
+			DrawGraph(posX, posY, BossHitGH[1], true);
+		}
+		if (timer > 20 && timer <= 30)
+		{
+			DrawGraph(posX, posY, BossHitGH[2], true);
+		}
+	}
+	else if (timer <= 10)
 	{
 		DrawGraph(posX, posY, BossGH[0], true);
 	}
-	if (timer > 10 && timer <= 20)
+	else if (timer > 10 && timer <= 20)
 	{
 		DrawGraph(posX, posY, BossGH[1], true);
 	}
-	if (timer > 20 && timer <= 30)
+	else if (timer > 20 && timer <= 30)
 	{
 		DrawGraph(posX, posY, BossGH[2], true);
 	}
-	if (timer == 30)
-	{
-		DrawGraph(posX, posY, BossGH[0], true);
-		timer = 0;
-	}
-
+	
 	//ボスの攻撃範囲
 	DrawCircle(posX, posY, radius + 50, GetColor(255, 0, 0), false);
 
