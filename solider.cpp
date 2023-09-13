@@ -16,18 +16,18 @@ void Solider::initialize(
 	}
 }
 
-void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
+void Solider::Update(int& bossPosX, int& bossPosY, int& bossPosR)
 {
 	//ƒvƒŒƒCƒ„[‚ÌÀ•W‚ğæ“¾
-	len = { static_cast<float>(pos.x - enemyX), static_cast<float>(pos.y - enemyY) };
+	len = { static_cast<float>(pos.x - bossPosX), static_cast<float>(pos.y - bossPosY) };
 	len.normalize();
 	len *= -1;
 	len *= speed;
 	velocity = len;
 	//UŒ‚”ÍˆÍ‚É“G‚ª‚¢‚È‚¯‚ê‚Î’ÇÕ
 	//‰~‚Ì“–‚½‚è”»’è
-	if ((atkRadius + enemyRadius) * (atkRadius + enemyRadius)
-		< (enemyX - pos.x) * (enemyX - pos.x) + (enemyY - pos.y) * (enemyY - pos.y))
+	if ((atkRadius + bossPosR) * (atkRadius + bossPosR)
+		< (bossPosX - pos.x) * (bossPosX - pos.x) + (bossPosY - pos.y) * (bossPosY - pos.y))
 	{
 		pos += velocity;
 		isMove = true;
@@ -80,7 +80,6 @@ void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,in
 			bossHp -= 1;
 		}
 	}
-	
 }
 
 void Solider::Draw(int& GraphHandle)

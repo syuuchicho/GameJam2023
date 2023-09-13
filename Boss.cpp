@@ -163,8 +163,6 @@ void Boss::Draw()
 		timer = 0;
 	}
 
-
-
 	//ボスの攻撃範囲
 	DrawCircle(posX, posY, radius + 50, GetColor(255, 0, 0), false);
 

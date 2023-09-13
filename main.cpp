@@ -3,7 +3,7 @@
 #include "Boss.h"
 
 // ウィンドウのタイトルに表示する文字列
-const char TITLE[] = "GameJam2023";
+const char TITLE[] = "3064_兵隊side";
 
 // ウィンドウ横幅
 const int WIN_WIDTH = 1280;
@@ -69,15 +69,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int playerX = 0,
 		playerY = 0,
 		playerR = 0;
-	
+
 	//リソース変数
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
-	int soliderBornSound = 0;
-	int soliderHitSound = 0;
-	//-----------------画像一覧------------------//
-	
 
+	//-----------------画像一覧------------------//
 	int soliderGH = LoadGraph("Resource/solider.png");
 	//背景
 	int backGroundGH = LoadGraph("Resource/backGround.png");
@@ -87,7 +84,25 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
 
 	//-----------------BGM一覧----------------------//
-	soliderBornSound= LoadSoundMem("BGM/soliderBorn.mp3");
+	int titleBGM = LoadSoundMem("BGM/title.mp3"); //タイトルBGM
+	int playBGM = LoadSoundMem("BGM/playing.mp3");   //プレイBGM
+	int clearBGM = LoadSoundMem("BGM/gameClear.mp3"); //クリアBGM
+	int overBGM = LoadSoundMem("BGM/gameOver.mp3");   //オーバーBGM
+
+	///////BGM音量//////////
+	ChangeVolumeSoundMem(100, titleBGM);
+	ChangeVolumeSoundMem(100, playBGM);
+	ChangeVolumeSoundMem(100, clearBGM);
+	ChangeVolumeSoundMem(100, overBGM);
+
+	//----------SE--------
+	int soliderBornSound = LoadSoundMem("BGM/soliderBorn.mp3"); //プレイヤーを出す
+	int soliderHitSound = LoadSoundMem("BGM/punch.mp3");        //攻撃音
+
+	///////SE音量//////////
+	ChangeVolumeSoundMem(100, soliderBornSound);
+	ChangeVolumeSoundMem(150, soliderHitSound);
+	soliderBornSound = LoadSoundMem("BGM/soliderBorn.mp3");
 	soliderHitSound = LoadSoundMem("BGM/punch.mp3");
 
 
@@ -116,102 +131,130 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		//---------  ここからプログラムを記述  ----------//
 
 #pragma region 更新処理
-
 		int meteorX = boss->GetMeteorX(),
 			meteorY = boss->GetMeteorY(),
 			meteorR = boss->GetMeteorR(),
 			meteorX1 = boss->GetMeteorX1(),
 			meteorY1 = boss->GetMeteorY1(),
 			meteorR1 = boss->GetMeteorR1();
-
-		//-------------------------兵士---------------------//
-		//死んだ兵士を削除
-		soliders.remove_if([](std::unique_ptr<Solider>& solider) {
-			return solider->IsDead();
-			});
-		//左クリックで兵士が生まれる
-		if (MouseInput & MOUSE_INPUT_LEFT)
-		{
-			solBorn--;
-		}
-		if (solBorn <= 0 && solNo > 0)
-		{
-			//兵を初期化,登録する
-			std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
-			newSolider->initialize(MouseX, MouseY,soliderGH,soliderWalkGH, soliderAtkGH);
-			//兵士が生まれる効果音
-			PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
-			soliders.push_back(std::move(newSolider));
-			solNo--;
-			//カウントダウンリセット
-			solBorn = solBornTime;
-		}
-
-		int bossX = boss->GetPosX(),
-			bossY = boss->GetPosY(),
-			bossR = boss->GetPosR(),
-			bossHp = boss->GetHp();
-
-		//兵士毎フレーム処理
-		for (std::unique_ptr<Solider>& solider : soliders)
-		{
-			solider->Update(bossX, bossY, bossR);
-			solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
-			//右クリックで兵士を消す・solNo+1
-			if (MouseInput & MOUSE_INPUT_RIGHT)
-			{
-				solider->Eraser(MouseX, MouseY, MouseR, solNo);
-			}
-		}
-
 		//-------------------シーン管理-----------------------//
 		switch (scene)
 		{
 		case 0: //タイトル
-
+			//BGM停止
+			StopSoundMem(clearBGM); //クリア
+			StopSoundMem(overBGM);  //オーバー
+			//タイトルBGMを最初からリスタート
+			if (CheckSoundMem(titleBGM) == 0)
+			{
+				PlaySoundMem(titleBGM, DX_PLAYTYPE_BACK, true);
+			}
+			//クリックで次のシーン
+			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 0)
+			{
+				scene = 1;
+			}
 			break;
-
 		case 1: //操作説明
-
+			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 1)
+			{
+				scene = 2;
+			}
 			break;
-
 		case 2: //プレイ画面
+			//BGM停止
+			StopSoundMem(titleBGM); //タイトル
+			StopSoundMem(overBGM);  //オーバー(ゲームオーバーからプレイシーンでリトライできるように)
+			//プレイBGM再生
+			if (CheckSoundMem(playBGM) == 0)
+			{
+				PlaySoundMem(playBGM, DX_PLAYTYPE_LOOP, true);
+			}
+			#pragma region 兵士処理
+			//死んだ兵士を削除
+			soliders.remove_if([](std::unique_ptr<Solider>& solider) {
+				return solider->IsDead();
+				});
+			//左クリックで兵士が生まれる
+			if (MouseInput & MOUSE_INPUT_LEFT)
+			{
+				solBorn--;
+			}
+			if (solBorn <= 0 && solNo > 0)
+			{
+				//兵を初期化,登録する
+				std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
+				newSolider->initialize(MouseX, MouseY, soliderGH, soliderWalkGH, soliderAtkGH);
+				//兵士が生まれる効果音
+				PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
+				soliders.push_back(std::move(newSolider));
+				solNo--;
+				//カウントダウンリセット
+				solBorn = solBornTime;
+			}
 
-			break;
+			 bossX = boss->GetPosX(),
+				bossY = boss->GetPosY(),
+				bossR = boss->GetPosR(),
+				bossHp = boss->GetHp();
 
-		case 3: //ゲームクリア
-
-			break;
-
-		case 4: //ゲームオーバー
-
-			break;
-
-		}
-		//-------------------ボス---------------//
-		boss->SetHp(bossHp);
-		boss->Update();
-		//メテオが予兆の時は当たらない判定
-		if (boss->attackflag == 1)
-		{
+			//兵士毎フレーム処理
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
-					playerX = solider->GetPosX(),
-					playerY = solider->GetPosY(),
-					playerR = solider->GetPosR();
-				//メテオ1(円)とプレイヤーの当たり判定・メテオ2(円)とプレイヤーの当たり判定
-				if ((meteorR + playerR) * (meteorR + playerR)
-					>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY)
-					||
-					((playerR + meteorR1) * (playerR + meteorR1)
-					>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1)))
+				solider->Update(bossX, bossY, bossR);
+				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
+				//右クリックで兵士を消す・solNo+1
+				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
-					//当たったら消える
-					solider->Dead();
+					solider->Eraser(MouseX, MouseY, MouseR, solNo);
 				}
 			}
+#pragma endregion
+			#pragma region ボス処理
+			boss->Update();
+			boss->SetHp(bossHp);
+			//メテオが予兆の時は当たらない判定
+			if (boss->attackflag == 1)
+			{
+				for (std::unique_ptr<Solider>& solider : soliders)
+				{
+					playerX = solider->GetPosX(),
+						playerY = solider->GetPosY(),
+						playerR = solider->GetPosR();
+					//メテオ1(円)とプレイヤーの当たり判定・メテオ2(円)とプレイヤーの当たり判定
+					if ((meteorR + playerR) * (meteorR + playerR)
+						>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY)
+						||
+						((playerR + meteorR1) * (playerR + meteorR1)
+							>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1)))
+					{
+						//当たったら消える
+						solider->Dead();
+					}
+				}
+			}
+#pragma endregion
+			break;
+		case 3: //ゲームクリア
+			//プレイBGM停止
+			StopSoundMem(playBGM);
+
+			//クリアBGM再生
+			if (CheckSoundMem(clearBGM) == 0)
+			{
+				PlaySoundMem(clearBGM, DX_PLAYTYPE_LOOP, true);
+			}
+			break;
+		case 4: //ゲームオーバー
+			//プレイBGM停止
+			StopSoundMem(playBGM);
+			//オーバーBGM再生
+			if (CheckSoundMem(overBGM) == 0)
+			{
+				PlaySoundMem(overBGM, DX_PLAYTYPE_LOOP, true);
+			}
+			break;
 		}
-		boss->SetHp(bossHp);
 #pragma endregion
 
 #pragma region 描画処理
