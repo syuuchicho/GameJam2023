@@ -57,7 +57,7 @@ void Solider::Update(int& bossPosX, int& bossPosY, int& bossPosR)
 	}
 }
 
-void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo)
+void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo,int&soAlive)
 {
 	//ƒ}ƒEƒX‚Æ‚Ì‰~‚Ì“–‚½‚è”»’è
 	if ((radius + MouseRadius) * (radius + MouseRadius)
@@ -65,6 +65,7 @@ void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solN
 	{
 		Dead();
 		solNo++;
+		soAlive--;
 	}
 }
 

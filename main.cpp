@@ -66,18 +66,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
-	int solNo = 100;
+	int solNo = 50;
+	//生きてる兵士の数
+	int solAlive = 0;
 
 	int playerX = 0,
 		playerY = 0,
 		playerR = 0;
+	//兵士UI
+	int soliderUI[10] = {};
+	int solNum = 0;
+	const int Digit = 2;
+	char eachNumber[Digit] = {};
 
 	//リソース変数
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
 
 	//-----------------画像一覧------------------//
-	int soliderGH = LoadGraph("Resource/solider.png");
 	//タイトル
 	int titleGH = LoadGraph("Resource/title_2.png");
 	//チュートリアル
@@ -88,11 +94,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int gameClearGH = LoadGraph("Resource/gameClear.png");
 	//ゲームオーバー
 	int gameOver = LoadGraph("Resource/gameOver.png");
+	//兵士
+	int soliderGH = LoadGraph("Resource/solider.png");
 	//兵士歩行
 	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
 	//兵士攻撃
 	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
-
+	//兵士UI
+	LoadDivGraph("Resource/bitmapfont.png", 10, 10, 1, 40, 40, soliderUI);
 	//-----------------BGM一覧----------------------//
 	int titleBGM = LoadSoundMem("BGM/title.mp3"); //タイトルBGM
 	int playBGM = LoadSoundMem("BGM/playing.mp3");   //プレイBGM
@@ -201,6 +210,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
 				soliders.push_back(std::move(newSolider));
 				solNo--;
+				//生きてる兵士の数
+				solAlive++;
 				//カウントダウンリセット
 				solBorn = solBornTime;
 			}
@@ -218,7 +229,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
-					solider->Eraser(MouseX, MouseY, MouseR, solNo);
+					solider->Eraser(MouseX, MouseY, MouseR, solNo,solAlive);
 				}
 			}
 #pragma endregion
@@ -243,17 +254,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					{
 						//当たったら消える
 						solider->Dead();
+						solAlive--;
 					}
 				}
 			}
 			bossIsHit = false;
+			//ゲームクリア
 			if (bossHp <= 0)
 			{
 				scene = 3;
 			}
+			//ゲームオーバー
+			if (solAlive==0&&solNo==0)
+			{
+				scene = 4;
+			}
 #pragma endregion
 			break;
 		case 3: //ゲームクリア
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
+			{
+				scene = 0;
+			}
 			//プレイBGM停止
 			StopSoundMem(playBGM);
 
@@ -264,6 +286,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 			break;
 		case 4: //ゲームオーバー
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
+			{
+				scene = 0;
+			}
 			//プレイBGM停止
 			StopSoundMem(playBGM);
 			//オーバーBGM再生
@@ -296,6 +322,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				solider->Draw(soliderGH);
 			}
+			//兵士UI描画
+			for (int i = 0; i < Digit; i++)
+			{
+				solNum = solNo;
+
+				int CalcDigit = 10;
+				for (int i = 0; i < Digit; i++)
+				{
+					eachNumber[i] = solNum / CalcDigit;
+					solNum = solNum % CalcDigit;
+					CalcDigit = CalcDigit / 10;
+				}
+				DrawGraph(10 + i * 40, 10, soliderUI[eachNumber[i]], true);
+			}
+
 			//----真ん中の線------//
 			DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
 			break;
@@ -322,6 +363,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
 		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
+		DrawFormatString(100, 90, GetColor(255, 255, 255), "alive:%d",solAlive);
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面

@@ -8,20 +8,20 @@ public:
 	void initialize(
 		int& MousePosX,
 		int& MousePosY,
-		int&GraphHandlle,
+		int& GraphHandlle,
 		int WalkHandle[],
 		int AttackHandle[]);
 	void Update(int& bossPosX, int& bossPosY, int& bossPosR);
-	void Eraser(int& MousePosX, int& MousePosY,int&MouseRadius,int&solNo );
-	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp,int&HitSound,bool&bossIsHit);
-	void Draw(int&GraphHandle);
+	void Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo,int&soAlive);
+	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, int& HitSound, bool& bossIsHit);
+	void Draw(int& GraphHandle);
 
 	int GetPosX() { return pos.x; }
 	int GetPosY() { return pos.y; }
 	int GetPosR() { return radius; }
 
 	bool IsDead() const { return isDead_; }
-	bool Dead() { return isDead_ = true; }
+	bool Dead(){return isDead_ = true;}
 private:
 	Vector2 pos = { 0,0 };
 	Vector2 len = { 0,0 };
@@ -31,7 +31,7 @@ private:
 	int speed = 4;
 	int atk = 1;
 	int hp = 2;
-
+	
 	int WalkHandle_[4] = {};
 	int AttackHandle_[4] = {};
 
