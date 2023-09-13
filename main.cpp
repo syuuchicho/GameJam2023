@@ -3,7 +3,7 @@
 #include "Boss.h"
 
 // ウィンドウのタイトルに表示する文字列
-const char TITLE[] = "LE3D_09_サクライヒロト: タイトル";
+const char TITLE[] = "3064_兵隊SIDE";
 
 // ウィンドウ横幅
 const int WIN_WIDTH = 1280;
@@ -43,6 +43,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 
 	// ゲームループで使う変数の宣言
+
 
 	//------------BGM--------------
 	int titleBGM = LoadSoundMem("BGM/title.mp3"); //タイトルBGM
@@ -109,8 +110,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int soliderAtkGH[4] = {};
 
 	// 画像などのリソースデータ読み込み
+	
+
+	//タイトル
+	int titleGH = LoadGraph("Resource/title.png");
 	//背景
 	int backGroundGH = LoadGraph("Resource/backGround.png");
+	//ゲームクリア
+	int gameClearGH = LoadGraph("Resource/gameClear.png");
+	//ゲームオーバー
+	int gameOver = LoadGraph("Resource/gameOver.png");
 	
 	//兵士
 	soliderGH = LoadGraph("Resource/solider.png");
@@ -312,6 +321,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 		case 0: //タイトル
 
+			//タイトル画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, titleGH, true);
+
 			break;
 
 		case 1: //操作説明
@@ -340,9 +352,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 3 ://ゲームクリア
 
+			//ゲームクリア画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, gameClearGH, true);
+
 				break;
 
 		case 4: //ゲームオーバー
+
+			//ゲームオーバー画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, titleGH, true);
 
 				break;
 
@@ -382,6 +400,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	delete solider;
 	delete boss;
+
+	// 全グラフィックを初期化
+	InitGraph();
 
 	// Dxライブラリ終了処理
 	DxLib_End();
