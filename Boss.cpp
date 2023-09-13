@@ -123,11 +123,6 @@ void Boss::Meteor()
 	}
 }
 
-void Boss::Beam()
-{
-
-}
-
 void Boss::Update()
 {
 	timer++;
@@ -245,4 +240,27 @@ void Boss::Draw()
 	DrawFormatString(0, 100, GetColor(255, 255, 255), "%d:%d:%d", meteorX1, meteorY1, meteorR1);
 	DrawFormatString(0, 120, GetColor(255, 255, 255), "%d", timer);
 	DrawFormatString(0, 140, GetColor(255, 255, 255), "ボス Hp:%d", hp);
+}
+
+void Boss::Reset()
+{
+	hp = 100; //HP
+
+	bossMove = 0; //攻撃ムーブ
+
+	patternA = 0; //メテオモーション :パターン 1∼4
+	bossCount = 0; //攻撃前の予兆
+
+	attack_randA = 0; //パターンのランダム変数A
+	attack_randB = 0; //パターンのランダム変数B
+
+	patternB = 0; //ビームモーション :パターン1∼3
+	beamFlag = 0;
+
+	meteorX = 0, meteorY = 0, meteorR = 110;//メテオが落ちる座標(1個目)
+	meteorX1 = 0, meteorY1 = 0, meteorR1 = 120;;//メテオが落ちる座標(2個目)
+
+	timer = 0;
+
+	IsHit = false;
 }

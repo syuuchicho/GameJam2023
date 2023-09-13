@@ -63,7 +63,7 @@ void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solN
 	if ((radius + MouseRadius) * (radius + MouseRadius)
 		>= (MousePosX - pos.x) * (MousePosX - pos.x) + (MousePosY - pos.y) * (MousePosY - pos.y))
 	{
-		Dead();
+		isDead_ = true;
 		solNo++;
 		soAlive--;
 	}
@@ -137,4 +137,10 @@ void Solider::Draw(int& GraphHandle)
 	}
 	//çUåÇîÕàÕ
 	DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
+}
+
+void Solider::Death(int& solAlive)
+{
+	isDead_ = true;
+	solAlive--;
 }

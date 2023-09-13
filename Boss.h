@@ -11,6 +11,8 @@ public:
 
 	void Draw();
 
+	void Reset();
+
 	int GetPosX() { return posX; }
 	int GetPosY() { return posY; }
 	int GetPosR() { return radius; }
@@ -33,7 +35,6 @@ private:
 
 	//ボスの攻撃関数
 	void Meteor();
-	void Beam();
 
 private:
 

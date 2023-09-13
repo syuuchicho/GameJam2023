@@ -93,7 +93,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//ゲームクリア
 	int gameClearGH = LoadGraph("Resource/gameClear.png");
 	//ゲームオーバー
-	int gameOver = LoadGraph("Resource/gameOver.png");
+	int gameOverGH = LoadGraph("Resource/gameOver.png");
 	//兵士
 	int soliderGH = LoadGraph("Resource/solider.png");
 	//兵士歩行
@@ -170,6 +170,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				PlaySoundMem(titleBGM, DX_PLAYTYPE_BACK, true);
 			}
+			boss->Reset();
+			bossHp = 100;
+			solAlive = 0;
+			solNo = 50;
 			//クリックで次のシーン
 			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
@@ -177,6 +181,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 			break;
 		case 1: //操作説明
+
 			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 2;
@@ -229,7 +234,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
-					solider->Eraser(MouseX, MouseY, MouseR, solNo,solAlive);
+					solider->Eraser(MouseX, MouseY, MouseR, solNo, solAlive);
 				}
 			}
 #pragma endregion
@@ -253,29 +258,32 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 							>= (playerX - meteorX1) * (playerX - meteorX1) + (playerY - meteorY1) * (playerY - meteorY1)))
 					{
 						//当たったら消える
-						solider->Dead();
-						solAlive--;
+						solider->Death(solAlive);
 					}
 				}
 			}
 			bossIsHit = false;
+#pragma endregion
 			//ゲームクリア
 			if (bossHp <= 0)
 			{
 				scene = 3;
 			}
 			//ゲームオーバー
-			if (solAlive==0&&solNo==0)
+			if (solAlive == 0 && solNo == 0)
 			{
 				scene = 4;
 			}
-#pragma endregion
 			break;
 		case 3: //ゲームクリア
 			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 0;
 			}
+			boss->Reset();
+			bossHp = 100;
+			solAlive = 0;
+			solNo = 50;
 			//プレイBGM停止
 			StopSoundMem(playBGM);
 
@@ -290,6 +298,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				scene = 0;
 			}
+			boss->Reset();
+			bossHp = 100;
+
+			solAlive = 0;
+			solNo = 50;
 			//プレイBGM停止
 			StopSoundMem(playBGM);
 			//オーバーBGM再生
@@ -348,7 +361,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 4: //ゲームオーバー
 			//ゲームオーバー画像
-			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, titleGH, true);
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, gameOverGH, true);
 			break;
 		}
 
@@ -363,7 +376,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
 		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
-		DrawFormatString(100, 90, GetColor(255, 255, 255), "alive:%d",solAlive);
+		DrawFormatString(100, 90, GetColor(255, 255, 255), "alive:%d", solAlive);
 		DrawFormatString(0, 300, GetColor(255, 255, 255), "mouseX:%d", MouseX);
 		DrawFormatString(0, 320, GetColor(255, 255, 255), "mouseY:%d", MouseY);
 
