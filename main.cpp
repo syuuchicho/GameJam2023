@@ -364,6 +364,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
 		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
 		DrawFormatString(100, 90, GetColor(255, 255, 255), "alive:%d",solAlive);
+		DrawFormatString(0, 300, GetColor(255, 255, 255), "mouseX:%d", MouseX);
+		DrawFormatString(0, 320, GetColor(255, 255, 255), "mouseY:%d", MouseY);
+
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面

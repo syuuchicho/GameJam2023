@@ -144,7 +144,7 @@ void Boss::Update()
 		break;
 	}
 	//Hpゲージ計算
-	HPGaugeX = (100 - hp) * 6.79;
+	HPGaugeX = (100 - hp) * 4.52;
 }
 
 
@@ -234,10 +234,10 @@ void Boss::Draw()
 	}
 
 	//Hpゲージを描画
-	DrawGraph(0, 0, HPGaugeGH, true);
-	//ゲージの長さ=679ドット,スクリーン上始点299
-	DrawBox(980, 76, 980-HPGaugeX, 180, GetColor(0, 0, 0), true);
-			
+	DrawExtendGraph(600, 0,1450,500 ,HPGaugeGH, true);
+	//ゲージの長さ=451ドット,スクリーン上始点820
+	DrawBox(1271-HPGaugeX, 50, 1271, 101, GetColor(0, 0, 0), true);
+			//1271-820=451
 
 	DrawFormatString(0, 20, GetColor(255, 255, 255), "%d", bossCount);
 	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", patternA);
