@@ -112,7 +112,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//兵士UI
 	int soliderUI[10] = {};
 	int solNum = 0;
-	static const uint32_t Digit = 2;
+	const int Digit = 2;
 	char eachNumber[Digit] = {};
 
 	// 画像などのリソースデータ読み込み
