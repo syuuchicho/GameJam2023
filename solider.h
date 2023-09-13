@@ -14,9 +14,10 @@ public:
 		int WalkHandle[],
 		int AttackHandle[]);
 	void Update(int& enemyX, int& enemyY, int& enemyRadius);
-	void Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo);
+	void Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo, int& soAlive);
 	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, int& HitSound, bool& bossIsHit);
 	void Draw(int& GraphHandle);
+	void Reset();
 	
 	bool IsDead() const { return isDead_; }
 	bool Dead() { return isDead_ = true; }
@@ -32,9 +33,6 @@ private:
 	int radius = 32;
 	int atkRadius = 30;
 	int speed = 4;
-
-	int atk = 1;
-	int hp = 2;
 
 	int WalkHandle_[4] = {};
 	int AttackHandle_[4] = {};

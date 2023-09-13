@@ -27,6 +27,8 @@ public:
 
 	int SetIsHit(bool& bossIsHit) { return IsHit = bossIsHit; }
 
+	void Reset();
+
 	int attackflag = 0; //予兆と攻撃のフラグ
 
 private:
@@ -43,15 +45,21 @@ private:
 	int atk = 1; //攻撃力
 
 	//初期座標------
-	int posX = 950;
+	int posX = 1130;
 	int posY = 400;
-	int radius = 70;
+	int radius = 140;
 
 	int BossGH[3] = {};
 	int BossHitGH[3] = {};
+	int meteorGH[3] = {};
 
 	int HPGaugeX = 0;
 	int HPGaugeGH = 0;
+
+	int magicNumX = 160,
+		magicNumY = 160;
+
+	int magicPosX = 160;
 
 	//攻撃処理-----
 	int bossMove = 0; //攻撃ムーブ
@@ -69,6 +77,7 @@ private:
 	int meteorX1 = 0, meteorY1 = 0, meteorR1 = 120;;//メテオが落ちる座標(2個目)
     
 	int timer = 0;
+	int flagTimer = 0;
 
 	bool IsHit = false;
 

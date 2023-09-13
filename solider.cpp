@@ -15,6 +15,7 @@ void Solider::initialize(
 		WalkHandle_[i] = WalkHandle[i];
 		AttackHandle_[i] = AttackHandle[i];
 	}
+
 }
 
 void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
@@ -57,7 +58,7 @@ void Solider::Update(int& enemyX, int& enemyY, int& enemyRadius)
 	}
 }
 
-void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo)
+void Solider::Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo,int& soAlive)
 {
 	//マウスとの円の当たり判定
 	if ((radius + MouseRadius) * (radius + MouseRadius)
@@ -81,6 +82,16 @@ void Solider::Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, i
 			bossIsHit = true;
 		}
 	}
+}
+
+void Solider::Reset()
+{
+	isMove = false;
+	isAttack = false;
+	isDead_ = false;
+	moveTimer = 0;
+	atkTimer = 0;
+
 }
 
 void Solider::Draw(int& GraphHandle)
@@ -135,9 +146,9 @@ void Solider::Draw(int& GraphHandle)
 	{
 		DrawExtendGraph(pos.x - radius, pos.y - radius, posX2, posY2, GraphHandle, true);
 	}
-	//攻撃範囲
-	DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
+	////攻撃範囲
+	//DrawCircle(pos.x, pos.y, atkRadius, GetColor(255, 0, 0), false);
 
-	DrawFormatString(0, 160, GetColor(255, 255, 255), "プレイヤー Hp:%d", hp);
+	/*DrawFormatString(0, 160, GetColor(255, 255, 255), "プレイヤー Hp:%d", hp);*/
 }
 
