@@ -15,7 +15,7 @@ public:
 		int AttackHandle[]);
 	void Update(int& enemyX, int& enemyY, int& enemyRadius);
 	void Eraser(int& MousePosX, int& MousePosY, int& MouseRadius, int& solNo);
-	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, int& HitSound);
+	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, int& HitSound, bool& bossIsHit);
 	void Draw(int& GraphHandle);
 	
 	bool IsDead() const { return isDead_; }

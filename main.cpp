@@ -70,6 +70,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
+	int oldMouseInput = 0;
 
 	//---------シーン---------------//
 	int scene = 0;
@@ -78,6 +79,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Boss* boss = nullptr;
 	boss = new Boss();
 
+	//初期化
 	boss->Initialize();
 
 	int bossX = 0,
@@ -85,17 +87,17 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		bossR = 0,
 		bossHp = 0;
 
+	bool bossIsHit = false;
+
 
 	// 画像などのリソースデータ変数宣言
-	//ボス画像
-	
 	
 	//-------------兵士-----------------------//
 	std::list<std::unique_ptr<Solider>>soliders;
 	Solider* solider = nullptr;
 	const int solBornTime = 5;
 	int solBorn = solBornTime;
-	int solNo = 100;
+	int solNo = 50;
 
 	int playerX = 0,
 		playerY = 0,
@@ -105,28 +107,37 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	// 画像などのリソースデータ変数宣言
 	//兵士
-	int soliderGH = 0;
 	int soliderWalkGH[4] = {};
 	int soliderAtkGH[4] = {};
+	//兵士UI
+	int soliderUI[10] = {};
+	int solNum = 0;
+	static const uint32_t Digit = 2;
+	char eachNumber[Digit] = {};
 
 	// 画像などのリソースデータ読み込み
 	
 
+	//-----------------画像一覧------------------//
+	int soliderGH = LoadGraph("Resource/solider.png");
 	//タイトル
-	int titleGH = LoadGraph("Resource/title.png");
+	int titleGH = LoadGraph("Resource/title_2.png");
+	//チュートリアル
+	int tutorial_2GH = LoadGraph("Resource/tutorial_2.png");
 	//背景
 	int backGroundGH = LoadGraph("Resource/backGround.png");
 	//ゲームクリア
 	int gameClearGH = LoadGraph("Resource/gameClear.png");
 	//ゲームオーバー
 	int gameOver = LoadGraph("Resource/gameOver.png");
-	
 	//兵士
 	soliderGH = LoadGraph("Resource/solider.png");
 	//兵士歩行
 	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
 	//兵士攻撃
 	LoadDivGraph("Resource/soliderAttack.png", 4, 4, 1, 160, 160, soliderAtkGH);
+	//兵士UI
+	LoadDivGraph("Resource/bitmapfont.png", 10, 10, 1, 40, 40, soliderUI);
 
 
 	// 最新のキーボード情報用
@@ -149,6 +160,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		ClearDrawScreen();
 		//マウス座標
 		GetMousePoint(&MouseX, &MouseY);
+		//1フレーム前のマウス情報
+		oldMouseInput = MouseInput;
 		//マウス入力
 		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
@@ -179,7 +192,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 
 			//クリックで次のシーン
-			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 0)
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 1;
 			}
@@ -187,7 +200,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 1: //操作説明
 
-			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 1)
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 2;
 			}
@@ -207,28 +220,33 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			//-------------------------兵士---------------------//
 
+			
+
 			//死んだ兵士を削除
 			soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 				return solider->IsDead();
 				});
-			//左クリックで兵士が生まれる
-			if (MouseInput & MOUSE_INPUT_LEFT)
+			if (MouseX < 440)
 			{
-				solBorn--;
-			}
-			if (solBorn <= 0 && solNo > 0)
-			{
-				//兵を初期化,登録する
-				std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
-				newSolider->initialize(MouseX, MouseY, soliderGH, soliderWalkGH, soliderAtkGH);
+				//左クリックで兵士が生まれる
+				if (MouseInput & MOUSE_INPUT_LEFT)
+				{
+					solBorn--;
+				}
+				if (solBorn <= 0 && solNo > 0)
+				{
+					//兵を初期化,登録する
+					std::unique_ptr<Solider>newSolider = std::make_unique<Solider>();
+					newSolider->initialize(MouseX, MouseY, soliderGH, soliderWalkGH, soliderAtkGH);
 
-				//兵士が生まれる効果音
-				PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
+					//兵士が生まれる効果音
+					PlaySoundMem(soliderBornSound, DX_PLAYTYPE_BACK, true);
 
-				soliders.push_back(std::move(newSolider));
-				solNo--;
-				//カウントダウンリセット
-				solBorn = solBornTime;
+					soliders.push_back(std::move(newSolider));
+					solNo--;
+					//カウントダウンリセット
+					solBorn = solBornTime;
+				}
 			}
 
 			bossX = boss->GetPosX(),
@@ -241,7 +259,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
 				solider->Update(bossX, bossY, bossR);
-				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound);
+				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound, bossIsHit);
+
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
@@ -250,10 +269,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				playerX = solider->GetPosX(),
 				playerY = solider->GetPosY(),
 				playerR = solider->GetPosR();
+
 			}
 			//-----------ボス-----------------------//
-
-			
+			boss->SetIsHit(bossIsHit);
 			boss->Update();
 			boss->SetHp(bossHp);
 
@@ -263,8 +282,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				for (std::unique_ptr<Solider>& solider : soliders)
 				{
 					playerX = solider->GetPosX(),
-						playerY = solider->GetPosY(),
-						playerR = solider->GetPosR();
+					playerY = solider->GetPosY(),
+					playerR = solider->GetPosR();
 					//メテオ1(円)とプレイヤーの当たり判定・メテオ2(円)とプレイヤーの当たり判定
 					if ((meteorR + playerR) * (meteorR + playerR)
 						>= (playerX - meteorX) * (playerX - meteorX) + (playerY - meteorY) * (playerY - meteorY)
@@ -277,7 +296,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					}
 				}
 			}
-
+			bossIsHit = false;
+			if (bossHp <= 0)
+			{
+				scene = 3;
+			}
 			break;
 
 		case 3: //ゲームクリア
@@ -328,6 +351,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		case 1: //操作説明
 
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, tutorial_2GH, true);
+
 			break;
 
 		case 2: //プレイ画面
@@ -338,11 +363,27 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 			//----ボス------------//
 			boss->Draw();
-
+			
 			//----------------------兵士--------------------//
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
 				solider->Draw(soliderGH);
+			}
+
+			//兵士UI描画
+			for (int i = 0; i < Digit; i++)
+			{
+				solNum = solNo;
+
+				int CalcDigit = 10;
+				for (int i = 0; i < Digit; i++)
+				{
+					eachNumber[i] = solNum / CalcDigit;
+					solNum = solNum % CalcDigit;
+					CalcDigit = CalcDigit / 10;
+				}
+
+				DrawGraph(10 + i * 40, 10, soliderUI[eachNumber[i]], true);
 			}
 
 			//----真ん中の線------//
@@ -378,6 +419,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
 		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
+		DrawFormatString(0, 280, GetColor(255, 255, 255), "No:%d", solNo);
 
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
