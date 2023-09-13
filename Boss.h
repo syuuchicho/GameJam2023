@@ -48,7 +48,8 @@ private:
 
 	int BossGH[3] = {};
 	int BossHitGH[3] = {};
-
+	int HPGaugeX = 0;
+	int HPGaugeGH = 0;
 
 	//攻撃処理-----
 	int bossMove = 0; //攻撃ムーブ
