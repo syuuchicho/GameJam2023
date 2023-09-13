@@ -144,3 +144,8 @@ void Solider::Death(int& solAlive)
 	isDead_ = true;
 	solAlive--;
 }
+
+void Solider::Reset()
+{
+	isDead_ = true;
+}

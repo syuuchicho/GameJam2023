@@ -94,6 +94,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int gameClearGH = LoadGraph("Resource/gameClear.png");
 	//ゲームオーバー
 	int gameOverGH = LoadGraph("Resource/gameOver.png");
+	//兵士の数
+	int soliderNum = LoadGraph("Resource/soliderNum.png");
 	//兵士
 	int soliderGH = LoadGraph("Resource/solider.png");
 	//兵士歩行
@@ -170,10 +172,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				PlaySoundMem(titleBGM, DX_PLAYTYPE_BACK, true);
 			}
-			boss->Reset();
-			bossHp = 100;
-			solAlive = 0;
-			solNo = 50;
 			//クリックで次のシーン
 			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
@@ -181,7 +179,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			}
 			break;
 		case 1: //操作説明
-
 			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 2;
@@ -201,10 +198,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 				return solider->IsDead();
 				});
-			//左クリックで兵士が生まれる
-			if (MouseInput & MOUSE_INPUT_LEFT)
+			if (MouseX < 440)
 			{
-				solBorn--;
+				//左クリックで兵士が生まれる
+				if (MouseInput & MOUSE_INPUT_LEFT)
+				{
+					solBorn--;
+				}
 			}
 			if (solBorn <= 0 && solNo > 0)
 			{
@@ -280,6 +280,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				scene = 0;
 			}
+			for (std::unique_ptr<Solider>& solider : soliders)
+			{
+				solider->Reset();
+			}
 			boss->Reset();
 			bossHp = 100;
 			solAlive = 0;
@@ -298,9 +302,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				scene = 0;
 			}
+			for (std::unique_ptr<Solider>& solider : soliders)
+			{
+				solider->Reset();
+			}
 			boss->Reset();
 			bossHp = 100;
-
 			solAlive = 0;
 			solNo = 50;
 			//プレイBGM停止
@@ -328,6 +335,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		case 2: //プレイ画面
 			//背景描画
 			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, backGroundGH, true);
+
+			//兵士の数
+			DrawExtendGraph(0, 0, 700, 400, soliderNum, true);
+
 			//----ボス------------//
 			boss->Draw();
 			//----------------------兵士--------------------//
@@ -347,7 +358,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 					solNum = solNum % CalcDigit;
 					CalcDigit = CalcDigit / 10;
 				}
-				DrawGraph(10 + i * 40, 10, soliderUI[eachNumber[i]], true);
+				DrawGraph(10 + i * 40, 20, soliderUI[eachNumber[i]], true);
 			}
 
 			//----真ん中の線------//
@@ -370,15 +381,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
 		}
+		else if (MouseInput & MOUSE_INPUT_RIGHT)
+		{
+			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
+		}
 		else
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
 		}
-		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
-		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
-		DrawFormatString(100, 90, GetColor(255, 255, 255), "alive:%d", solAlive);
-		DrawFormatString(0, 300, GetColor(255, 255, 255), "mouseX:%d", MouseX);
-		DrawFormatString(0, 320, GetColor(255, 255, 255), "mouseY:%d", MouseY);
 
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//

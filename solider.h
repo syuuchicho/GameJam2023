@@ -16,6 +16,7 @@ public:
 	void Attack(int& bossPosX, int& bossPosY, int& bossPosR, int& bossHp, int& HitSound, bool& bossIsHit);
 	void Draw(int& GraphHandle);
 	void Death(int& solAlive);
+	void Reset();
 
 	int GetPosX() { return pos.x; }
 	int GetPosY() { return pos.y; }

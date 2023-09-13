@@ -6,6 +6,7 @@ void Boss::Initialize()
 {
 	LoadDivGraph("Resource/Boss1.png", 3, 3, 1, 320, 320, BossGH);
 	LoadDivGraph("Resource/GetDamage.png", 3, 3, 1, 320, 320, BossHitGH);
+	LoadDivGraph("Resource/meteor.png", 3, 3, 1, 320, 320, meteorGH);
 	HPGaugeGH = LoadGraph("Resource/HpGauge.png");
 }
 
@@ -131,6 +132,15 @@ void Boss::Update()
 		timer = 0;
 	}
 
+	if (attackflag == 1)
+	{
+		flagTimer++;
+	}
+	else
+	{
+		flagTimer = 0;
+	}
+
 	//攻撃パターン
 	switch (bossMove)
 	{
@@ -150,32 +160,29 @@ void Boss::Draw()
 	{
 		if (timer <= 10)
 		{
-			DrawGraph(posX, posY, BossHitGH[0], true);
+			DrawGraph(posX - magicPosX, posY - magicNumY, BossHitGH[0], true);
 		}
 		if (timer > 10 && timer <= 20)
 		{
-			DrawGraph(posX, posY, BossHitGH[1], true);
+			DrawGraph(posX - magicPosX, posY - magicNumY, BossHitGH[1], true);
 		}
 		if (timer > 20 && timer <= 30)
 		{
-			DrawGraph(posX, posY, BossHitGH[2], true);
+			DrawGraph(posX - magicPosX, posY - magicNumY, BossHitGH[2], true);
 		}
 	}
 	else if (timer <= 10)
 	{
-		DrawGraph(posX, posY, BossGH[0], true);
+		DrawGraph(posX - magicPosX, posY - magicNumY, BossGH[0], true);
 	}
 	else if (timer > 10 && timer <= 20)
 	{
-		DrawGraph(posX, posY, BossGH[1], true);
+		DrawGraph(posX - magicPosX, posY - magicNumY, BossGH[1], true);
 	}
 	else if (timer > 20 && timer <= 30)
 	{
-		DrawGraph(posX, posY, BossGH[2], true);
+		DrawGraph(posX - magicPosX, posY - magicNumY, BossGH[2], true);
 	}
-	
-	//ボスの攻撃範囲
-	DrawCircle(posX, posY, radius + 50, GetColor(255, 0, 0), false);
 
 	//ボスの攻撃(予兆)
 	if (attackflag == 0)
@@ -183,63 +190,84 @@ void Boss::Draw()
 		switch (patternA)
 		{
 		case 0:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), false);
+			DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[0], true);
+			DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[0], true);
 			break;
 
 		case 1:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), false);
+			DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[0], true);
+			DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[0], true);
 			break;
 
 		case 2:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), false);
+			DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[0], true);
+			DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[0], true);
 			break;
 		case 3:
-			DrawCircle(meteorX, meteorY, meteorR + 40, GetColor(255, 0, 255), false);
-			DrawCircle(meteorX1, meteorY1, meteorR1 + 40, GetColor(255, 0, 255), false);
+			DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[0], true);
+			DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[0], true);
 			break;
 		}
 	}
 	//ボスの攻撃
 	if (attackflag == 1)
 	{
-		switch (patternA)
+		if (flagTimer < 20)
 		{
-		case 0:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), true);
-			break;
+			switch (patternA)
+			{
+			case 0:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[1], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[1], true);
+				break;
 
-		case 1:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), true);
-			break;
+			case 1:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[1], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[1], true);
+				break;
 
-		case 2:
-			DrawCircle(meteorX, meteorY, meteorR, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, meteorR1, GetColor(255, 0, 255), true);
-			break;
-		case 3:
-			DrawCircle(meteorX, meteorY, meteorR + 40, GetColor(255, 0, 255), true);
-			DrawCircle(meteorX1, meteorY1, meteorR1 + 40, GetColor(255, 0, 255), true);
-			break;
+			case 2:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[1], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[1], true);
+				break;
+			case 3:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[1], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[1], true);
+				break;
+			}
+		}
+		if (flagTimer > 20)
+		{
+			switch (patternA)
+			{
+			case 0:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[2], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[2], true);
+				break;
+
+			case 1:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[2], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[2], true);
+				break;
+
+			case 2:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[2], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[2], true);
+				break;
+
+			case 3:
+				DrawGraph(meteorX - magicNumX, meteorY - magicNumY, meteorGH[2], true);
+				DrawGraph(meteorX1 - magicNumX, meteorY1 - magicNumY, meteorGH[2], true);
+				break;
+			}
 		}
 	}
 
 	//Hpゲージを描画
-	DrawExtendGraph(600, 0,1450,500 ,HPGaugeGH, true);
+	DrawExtendGraph(600, 0, 1450, 500, HPGaugeGH, true);
 	//ゲージの長さ=451ドット,スクリーン上始点820
-	DrawBox(1271-HPGaugeX, 50, 1271, 101, GetColor(0, 0, 0), true);
-			//1271-820=451
-
-	DrawFormatString(0, 20, GetColor(255, 255, 255), "%d", bossCount);
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "%d", patternA);
-	DrawFormatString(0, 80, GetColor(255, 255, 255), "%d:%d:%d", meteorX, meteorY, meteorR);
-	DrawFormatString(0, 100, GetColor(255, 255, 255), "%d:%d:%d", meteorX1, meteorY1, meteorR1);
-	DrawFormatString(0, 120, GetColor(255, 255, 255), "%d", timer);
-	DrawFormatString(0, 140, GetColor(255, 255, 255), "ボス Hp:%d", hp);
+	DrawBox(1271 - HPGaugeX, 50, 1271, 101, GetColor(0, 0, 0), true);
+	//1271-820=451
 }
 
 void Boss::Reset()
