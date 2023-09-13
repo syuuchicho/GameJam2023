@@ -3,7 +3,7 @@
 #include "Boss.h"
 
 // ウィンドウのタイトルに表示する文字列
-const char TITLE[] = "3064_兵隊side";
+const char TITLE[] = "3064_兵隊SIDE";
 
 // ウィンドウ横幅
 const int WIN_WIDTH = 1280;
@@ -44,6 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	int MouseY = 0;
 	int MouseR = 16;
 	int MouseInput = 0;
+	int oldMouseInput = 0;
 
 	//シーン
 	int scene = 0;
@@ -77,8 +78,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	//-----------------画像一覧------------------//
 	int soliderGH = LoadGraph("Resource/solider.png");
+	//タイトル
+	int titleGH = LoadGraph("Resource/title_2.png");
+	//チュートリアル
+	int tutorial_2GH = LoadGraph("Resource/tutorial_2.png");
 	//背景
 	int backGroundGH = LoadGraph("Resource/backGround.png");
+	//ゲームクリア
+	int gameClearGH = LoadGraph("Resource/gameClear.png");
+	//ゲームオーバー
+	int gameOver = LoadGraph("Resource/gameOver.png");
 	//兵士歩行
 	LoadDivGraph("Resource/soliderWalk.png", 4, 4, 1, 160, 160, soliderWalkGH);
 	//兵士攻撃
@@ -127,6 +136,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		ClearDrawScreen();
 		//マウス座標
 		GetMousePoint(&MouseX, &MouseY);
+		//1フレーム前のマウス情報
+		oldMouseInput = MouseInput;
 		//マウス入力
 		MouseInput = GetMouseInput();
 		//---------  ここからプログラムを記述  ----------//
@@ -151,13 +162,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				PlaySoundMem(titleBGM, DX_PLAYTYPE_BACK, true);
 			}
 			//クリックで次のシーン
-			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 0)
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 1;
 			}
 			break;
 		case 1: //操作説明
-			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && scene == 1)
+			if ((MouseInput & MOUSE_INPUT_LEFT) && (oldMouseInput & MOUSE_INPUT_LEFT) == 0)
 			{
 				scene = 2;
 			}
@@ -171,7 +182,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			{
 				PlaySoundMem(playBGM, DX_PLAYTYPE_LOOP, true);
 			}
-			#pragma region 兵士処理
+#pragma region 兵士処理
 			//死んだ兵士を削除
 			soliders.remove_if([](std::unique_ptr<Solider>& solider) {
 				return solider->IsDead();
@@ -194,7 +205,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				solBorn = solBornTime;
 			}
 
-			 bossX = boss->GetPosX(),
+			bossX = boss->GetPosX(),
 				bossY = boss->GetPosY(),
 				bossR = boss->GetPosR(),
 				bossHp = boss->GetHp();
@@ -203,7 +214,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			for (std::unique_ptr<Solider>& solider : soliders)
 			{
 				solider->Update(bossX, bossY, bossR);
-				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound,bossIsHit);
+				solider->Attack(bossX, bossY, bossR, bossHp, soliderHitSound, bossIsHit);
 				//右クリックで兵士を消す・solNo+1
 				if (MouseInput & MOUSE_INPUT_RIGHT)
 				{
@@ -211,7 +222,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				}
 			}
 #pragma endregion
-			#pragma region ボス処理
+#pragma region ボス処理
 			boss->SetIsHit(bossIsHit);
 			boss->Update();
 			boss->SetHp(bossHp);
@@ -236,6 +247,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 				}
 			}
 			bossIsHit = false;
+			if (bossHp <= 0)
+			{
+				scene = 3;
+			}
 #pragma endregion
 			break;
 		case 3: //ゲームクリア
@@ -261,16 +276,39 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #pragma endregion
 
 #pragma region 描画処理
-		//背景描画
-		DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, backGroundGH, true);
-
-		//----ボス------------//
-		boss->Draw();
-
-		//----------------------兵士--------------------//
-		for (std::unique_ptr<Solider>& solider : soliders)
+		switch (scene)
 		{
-			solider->Draw(soliderGH);
+		case 0: //タイトル
+			//タイトル画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, titleGH, true);
+			break;
+
+		case 1: //操作説明
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, tutorial_2GH, true);
+			break;
+		case 2: //プレイ画面
+			//背景描画
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, backGroundGH, true);
+			//----ボス------------//
+			boss->Draw();
+			//----------------------兵士--------------------//
+			for (std::unique_ptr<Solider>& solider : soliders)
+			{
+				solider->Draw(soliderGH);
+			}
+			//----真ん中の線------//
+			DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
+			break;
+
+		case 3://ゲームクリア
+			//ゲームクリア画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, gameClearGH, true);
+			break;
+
+		case 4: //ゲームオーバー
+			//ゲームオーバー画像
+			DrawExtendGraph(0, 0, WIN_WIDTH, WIN_HEIGHT, titleGH, true);
+			break;
 		}
 
 		//----マウス----------//
@@ -278,18 +316,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 0, 0), false);
 		}
-		else if (MouseInput & MOUSE_INPUT_RIGHT)
-		{
-			DrawCircle(MouseX, MouseY, MouseR, GetColor(0, 0, 255), false);
-		}
 		else
 		{
 			DrawCircle(MouseX, MouseY, MouseR, GetColor(255, 255, 255), false);
 		}
-
-		//----真ん中の線------//
-		DrawLine(440, 0, 440, 720, GetColor(255, 255, 255), true);
-
+		DrawFormatString(0, 240, GetColor(255, 255, 255), "プレイヤー/%d:%d:%d", playerX, playerY, playerR);
+		DrawFormatString(0, 260, GetColor(255, 255, 255), "%d", scene);
 #pragma endregion
 		//---------  ここまでにプログラムを記述  ---------//
 		// (ダブルバッファ)裏面
